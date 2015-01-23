@@ -16,14 +16,14 @@ R(4, 2) = 0; R(4, 3) = 0; R(4, 5) = 0;
 R(5, 1) = 0; R(5, 3) = 0; R(5, 6) = 100;
 R(6, 2) = 0; R(6, 5) = 0; R(6, 6) = 100;
 
-for i = 1:1000;
+for i = 1:10000;
 
     if(R(S,N) ~= -1)
-    Q(S, N) = R(S, N) + gamma * localMax(Q, N);
+    Q(S, N) = R(S, N) + gamma * max(Q(N,:));
     end;
     S = N;
     N = randi(6);
     
 end;
-max = Max(Q);
-Q = Q/max;
+max = max(Q(:));
+Q = 100*Q/max;
