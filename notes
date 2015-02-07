@@ -1,0 +1,27 @@
+Commande véhicule
+	- Vitesse (analogique)
+	- Direction (analogique)
+
+Type d'environnement
+	- Circuit inconnu
+
+Retours de l'environnement
+	- Distance par rapport aux bords de la piste
+
+Solutions techniques pour le calcul des distances
+	- capteurs de distances (ultrasons, IR, télémètre laser)
+		* inconvients : erreurs possibles, accessibilité au matériel
+
+	- vision globale par caméra
+		* avantages : peu coûteux, précis
+		* inconvénient : calibration
+
+Programmation
+	- Matlab/Simulink
+
+Interfaçage
+	- Matlab/NxT possible
+
+Développement
+	- Algorithmes classiques dans un premier temps
+	- Etoffement avec des techniques plus récentes
