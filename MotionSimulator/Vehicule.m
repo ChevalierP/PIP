@@ -11,12 +11,14 @@ classdef Vehicule < handle
         command = [0 0];    % vitesse et angle de braquage des roues
         l = 1;              % distance entre le centre de gravité et
                             % le train arrière selon l'axe longitudinal
+        sensors
     end
     
     methods
         % Constructeur avec pos la position initiale
         function o = Vehicule(pos)
             o.position = pos;
+            o.sensors = [Sensor(o,0) Sensor(o,pi/2) Sensor(o,-pi/2)];
         end
         
         function addCommand(o, command)
@@ -45,6 +47,10 @@ classdef Vehicule < handle
             d = [v*cos(pos(3) - theta);
                  v*sin(pos(3) - theta);
                  -v*sin(theta)/o.l];
+        end
+        
+        function alpha = getAlpha(o)
+            alpha = o.position(3);
         end
     end
 end
