@@ -12,7 +12,7 @@ classdef Sensor < handle
         
         function v = getGlobalDirection(o)
             v = [cos(o.angle + o.vehicule.getAlpha())
-                 sin(o.angle + o.vehicule.getAlpha())];
+                 sin(o.angle + o.vehicule.getAlpha())]';
         end
     end
 end

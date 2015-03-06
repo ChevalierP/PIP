@@ -52,5 +52,9 @@ classdef Vehicule < handle
         function alpha = getAlpha(o)
             alpha = o.position(3);
         end
+        
+        function xy = getXY(o)
+            xy = o.position(1:2);
+        end
     end
 end
