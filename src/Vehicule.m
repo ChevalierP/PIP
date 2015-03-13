@@ -11,7 +11,7 @@ classdef Vehicule < handle
         command = [0 0];    % vitesse et angle de braquage des roues
         l = 1;              % distance entre le centre de gravité et
                             % le train arrière selon l'axe longitudinal
-        sensors
+        sensors             % capteurs de distance
     end
     
     methods

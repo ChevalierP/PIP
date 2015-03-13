@@ -3,7 +3,7 @@ close all
 addpath('geom');
 
 track = Track('line', 20);
-veh = Vehicule([2.5 0 pi/4]);
+veh = Vehicule([2.5 20 pi/4]);
 sensor_distance = track.getDistanceToBorders(veh);
 disp(sensor_distance);
 disp(track.isInside(veh));
