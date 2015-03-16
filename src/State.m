@@ -1,13 +1,14 @@
 classdef State < handle
-    properties(GetAccess = private)
+    properties(SetAccess = private)
         v_i
         theta_i
         d_i
-    end
-    properties(SetAccess = private)
+
         v
         theta
         d
+        
+        index
         threshold = 1;
     end
     
@@ -49,25 +50,29 @@ classdef State < handle
             card_v = length(State.speedSpace);
             card_theta = length(State.directionSpace);
             card_d = length(State.distanceSpace);
-            index = s.v + card_v*(s.theta - 1) + card_v*card_theta*(s.d(1) - 1)...
-                    + card_v*card_theta*card_d*(s.d(2) - 1)...
-                    + card_v*card_theta*card_d^2*(s.d(3) - 1);
+            index = s.v_i + card_v*(s.theta_i - 1) + card_v*card_theta*(s.d_i(1) - 1)...
+                    + card_v*card_theta*card_d*(s.d_i(2) - 1)...
+                    + card_v*card_theta*card_d^2*(s.d_i(3) - 1);
         end
         
         function s = fromIndex(i)
             card_v = length(State.speedSpace);
             card_theta = length(State.directionSpace);
             card_d = length(State.distanceSpace);
-            v_i = mod(i, card_v); %#ok<*PROP>
+            card = card_v;
+            v_i = mod(i, card); %#ok<*PROP>
             ii = i - v_i;
-            theta_i = mod(ii/card_v, card_theta) + 1;
+            card = card*card_theta;
+            theta_i = mod(ii, card)/card_v + 1;
             d_i = zeros(3, 1);
             ii = ii - card_v*(theta_i - 1);
-            d_i(1) = mod(ii, card_d)/(card_v*card_theta) + 1;
+            card = card*card_d;
+            d_i(1) = mod(ii, card)/(card_v*card_theta) + 1;
             ii = ii - card_v*card_theta*(d_i(1) - 1);
-            d_i(2) = mod(ii/(card_v*card_theta*card_d), card_d) + 1;
+            card = card*card_d;
+            d_i(2) = mod(ii, card)/card*card_d + 1;
             ii = ii - card_v*card_theta*card_d*(d_i(2) - 1);
-            d_i(3) = ii/(card_v*card_theta*card_d^2) + 1;
+            d_i(3) = ii/card + 1;
             s = State(v_i, theta_i, d_i);
         end
     end
@@ -75,16 +80,13 @@ classdef State < handle
     methods
         function o = State(v_i, theta_i, d_i)
             if strcmp(v_i, 'random')
-%                 V = 0:5:25;
-%                 Theta = -50:10:50;
-%                 D = -1:1;
-%                 v_i = randi(length(V));
-%                 theta_i = randi(length(Theta));
-%                 d_i = randi(length(D), 3, 1);
-%                 o.index = v_i*(length(V) - 1) + theta_i*(length(Theta) - 1) + prod(d_i);
-%                 o.v = V(v_i);
-%                 o.theta = Theta(theta_i);
-%                 o.d = D(d_i);
+                card_v = length(State.speedSpace);
+                card_theta = length(State.directionSpace);
+                card_d = length(State.distanceSpace);
+                v_j = randi(card_v);
+                theta_j = randi(card_theta);
+                d_j = randi(card_d, 3, 1); % rendre le 3 générique
+                o = State(v_j, theta_j, d_j);
             else
                 o.v_i = v_i;
                 o.theta_i = theta_i;
@@ -94,8 +96,9 @@ classdef State < handle
                 N = length(d_i);
                 o.d = zeros(N, 1);
                 for i = 1:N
-                    o.d(i) = d_i(i);
+                    o.d(i) = State.distanceSpace(d_i(i));
                 end
+                o.index = State.toIndex(o);
 %                 for i = 1:N
 %                     if d(i) > o.threshold
 %                         o.d(i) = 1;
