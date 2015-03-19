@@ -7,14 +7,14 @@ addpath('geom');
 %     = 1 si d >= 1
 % theta = -50:10:50 °
 % v = 0:5:25 m/s
-State.setSpace(0:5:25, -50:10:50, 0:1);
+State.setSpace(0:5:25, (-50:10:50)*pi/180, 0:1);
 Q = zeros(1782);
 gamma = 0.9;
 
 niter = 10000;
 for iter = 1:niter
-    track = Track('line', 20);
-    veh = Vehicule([0 0 0]);
+    track = Track('circle', [0 0], 5);
+    veh = Vehicule([5 1 pi/2]);
     S = State.fromIndex(1);
 
     stop = 0;
@@ -36,5 +36,5 @@ for iter = 1:niter
         veh.sim();
     end
     
-    disp(floor(iter/niter*100));
+    disp([floor(iter/niter*100) floor(i/10)]);
 end
