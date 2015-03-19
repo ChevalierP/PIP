@@ -54,7 +54,7 @@ classdef Vehicule < handle
         end
         
         function xy = getXY(o)
-            xy = o.position(1:2);
+            xy = o.position(end, 1:2);
         end
     end
 end

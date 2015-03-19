@@ -61,6 +61,7 @@ classdef State < handle
             card_d = length(State.distanceSpace);
             card = card_v;
             v_i = mod(i, card); %#ok<*PROP>
+            if v_i == 0, v_i = card; end;
             ii = i - v_i;
             card = card*card_theta;
             theta_i = mod(ii, card)/card_v + 1;
@@ -79,21 +80,23 @@ classdef State < handle
     
     methods
         function o = State(v_i, theta_i, d_i)
-            if strcmp(v_i, 'random')
-                card_v = length(State.speedSpace);
-                card_theta = length(State.directionSpace);
-                card_d = length(State.distanceSpace);
-                v_j = randi(card_v);
-                theta_j = randi(card_theta);
-                d_j = randi(card_d, 3, 1); % rendre le 3 générique
-                o = State(v_j, theta_j, d_j);
-            else
+%             if strcmp(v_i, 'random')
+%                 card_v = length(State.speedSpace);
+%                 card_theta = length(State.directionSpace);
+%                 card_d = length(State.distanceSpace);
+%                 v_j = randi(card_v);
+%                 theta_j = randi(card_theta);
+%                 d_j = randi(card_d, 3, 1); % rendre le 3 générique
+%                 o = State(v_j, theta_j, d_j);
+%             else
                 o.v_i = v_i;
                 o.theta_i = theta_i;
+                if strcmp(o.v_i, 'random'), o.v_i = randi(length(State.speedSpace)); end
+                if strcmp(o.theta_i, 'random'), o.theta_i = randi(length(State.directionSpace)); end
                 o.d_i = d_i;
-                o.v = State.speedSpace(v_i);
-                o.theta = State.directionSpace(theta_i);
-                N = length(d_i);
+                o.v = State.speedSpace(o.v_i);
+                o.theta = State.directionSpace(o.theta_i);
+                N = length(o.d_i);
                 o.d = zeros(N, 1);
                 for i = 1:N
                     o.d(i) = State.distanceSpace(d_i(i));
@@ -108,7 +111,7 @@ classdef State < handle
 %                         o.d(i) = -1;
 %                     end
 %                 end
-            end
+            %end
         end
         
         function b = isOutside(o)
