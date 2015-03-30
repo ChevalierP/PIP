@@ -17,29 +17,29 @@ bool myfn(int i, int j)
 int main()
 {
 	Eigen::Matrix<char, m1size, m1size> politiqueOptimale;
-	Eigen::Matrix<char, m1size, m1size> coutsCumules;
-	Eigen::Matrix<char, m1size, m1size> temporaire;
+	Eigen::Matrix<int, m1size, m1size> coutsCumules;
+	Eigen::Matrix<int, m1size, m1size> temporaire;
 	Eigen::Matrix<int, m1size,m1size> m = m1;
 
 	coutsCumules.setConstant(-1);
-	coutsCumules(m1size - 1, m1size - 1) = 0;
+	coutsCumules(m1size - 1, m1size - 1) = 1;
 	temporaire = coutsCumules;
 	politiqueOptimale.setConstant('-');
 
-	int haut = 0, bas = 0, gauche = 0, droite = 0;
 	std::vector<int> vect;
 
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		for (int j = 0; j < m1size - 1; j++)
+		temporaire = coutsCumules;
+		for (int j = 0; j < m.rows() ; j++)
 		{
-			for (int k = 0; k < m1size - 1; k++)
+			for (int k = 0; k < m.cols() ; k++)
 			{
 				if (j - 1 > 0)
 				{ 
 					if (coutsCumules(j - 1, k) > 0) 
 					{ 
-						haut = m(j - 1, k) + coutsCumules(j - 1, k);
+						int haut = m(j - 1, k) + coutsCumules(j - 1, k);
 						vect.push_back(haut);
 					}
 				}
@@ -47,34 +47,39 @@ int main()
 				{
 					if (coutsCumules(j, k - 1) > 0) 
 					{
-						gauche = m(j, k - 1) + coutsCumules(j, k - 1);
+						int gauche = m(j, k - 1) + coutsCumules(j, k - 1);
 						vect.push_back(gauche);
 					}
 				}
-				if (j + 1 < m1size - 1)
+				if (j + 1 < m.rows())
 				{
 					if (coutsCumules(j + 1, k) > 0) 
 					{ 
-						bas = m(j + 1, k) + coutsCumules(j + 1, k);
+						int bas = m(j + 1, k) + coutsCumules(j + 1, k);
 						vect.push_back(bas);
 					}
 				}
-				if (k + 1 < m1size - 1)
+				if (k + 1 < m.cols() )
 				{
 					if (coutsCumules(j , k + 1) > 0) 
 					{ 
-						droite = m(j, k + 1) + coutsCumules(j, k + 1);
+						int droite = m(j, k + 1) + coutsCumules(j, k + 1);
 						vect.push_back(droite);
 					}
 				}
-				
-				temporaire(j, k) = *std::min_element(vect.begin(), vect.end(), myfn);
+				if (vect.size() > 0)
+				{
+					vect.push_back(coutsCumules(j, k));
+					temporaire(j, k) = *std::min_element(vect.begin(), vect.end(), myfn);
+					std::cout << temporaire << '\n' << std::endl;
+				}
+				vect.clear();
 			}
 		}
 		coutsCumules = temporaire;
 	}
 
-	std::cout << politiqueOptimale << '\n' << '\n' << coutsCumules << std::endl;
+	std::cout << coutsCumules << std::endl;
 
 	return 0;
 }
