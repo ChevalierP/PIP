@@ -5,11 +5,13 @@
 #include <math.h>
 #include "exemple.h"
 
-bool myfn(int i, int j) 
+using Pair = std::pair < char, int > ;
+
+bool myfn(Pair i, Pair j) 
 { 
-	if (i >= 0 && j >= 0)
+	if (i.second > 0 && j.second > 0)
 	{ 
-		return i < j; 
+		return i.second < j.second; 
 	}
 	else return false;
 }
@@ -19,67 +21,72 @@ int main()
 	Eigen::Matrix<char, m1size, m1size> politiqueOptimale;
 	Eigen::Matrix<int, m1size, m1size> coutsCumules;
 	Eigen::Matrix<int, m1size, m1size> temporaire;
-	Eigen::Matrix<int, m1size,m1size> m = m1;
+	Eigen::Matrix<int, m1size, m1size> m = m1;
+
+	std::cout << m << '\n' << std::endl;
 
 	coutsCumules.setConstant(-1);
 	coutsCumules(m1size - 1, m1size - 1) = 1;
 	temporaire = coutsCumules;
 	politiqueOptimale.setConstant('-');
+	politiqueOptimale(politiqueOptimale.rows() - 1, politiqueOptimale.cols() - 1) = 'f';
 
-	std::vector<int> vect;
+	std::vector<std::pair<char, int>> vect;
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		temporaire = coutsCumules;
-		for (int j = 0; j < m.rows() ; j++)
+		for (int j = 0; j < m.rows(); j++)
 		{
-			for (int k = 0; k < m.cols() ; k++)
+			for (int k = 0; k < m.cols(); k++)
 			{
-				if (j - 1 > 0)
-				{ 
-					if (coutsCumules(j - 1, k) > 0) 
-					{ 
-						int haut = m(j - 1, k) + coutsCumules(j - 1, k);
-						vect.push_back(haut);
-					}
-				}
-				if (k - 1 > 0)
+				if (politiqueOptimale(j, k) != 'f')
 				{
-					if (coutsCumules(j, k - 1) > 0) 
+					if (j - 1 > 0)
 					{
-						int gauche = m(j, k - 1) + coutsCumules(j, k - 1);
-						vect.push_back(gauche);
+						if (coutsCumules(j - 1, k) > 0)
+						{
+							int haut = m(j - 1, k) + coutsCumules(j - 1, k);
+							vect.push_back(std::make_pair('h', haut));
+						}
 					}
-				}
-				if (j + 1 < m.rows())
-				{
-					if (coutsCumules(j + 1, k) > 0) 
-					{ 
-						int bas = m(j + 1, k) + coutsCumules(j + 1, k);
-						vect.push_back(bas);
+					if (k - 1 > 0)
+					{
+						if (coutsCumules(j, k - 1) > 0)
+						{
+							int gauche = m(j, k - 1) + coutsCumules(j, k - 1);
+							vect.push_back(std::make_pair('g', gauche));
+						}
 					}
-				}
-				if (k + 1 < m.cols() )
-				{
-					if (coutsCumules(j , k + 1) > 0) 
-					{ 
-						int droite = m(j, k + 1) + coutsCumules(j, k + 1);
-						vect.push_back(droite);
+					if (j + 1 < m.rows())
+					{
+						if (coutsCumules(j + 1, k) > 0)
+						{
+							int bas = m(j + 1, k) + coutsCumules(j + 1, k);
+							vect.push_back(std::make_pair('b', bas));
+						}
 					}
+					if (k + 1 < m.cols())
+					{
+						if (coutsCumules(j, k + 1) > 0)
+						{
+							int droite = m(j, k + 1) + coutsCumules(j, k + 1);
+							vect.push_back(std::make_pair('d', droite));
+						}
+					}
+					if (vect.size() > 0)
+					{
+						Pair pair_optimale = *std::min_element(vect.begin(), vect.end(), myfn);
+						temporaire(j, k) = pair_optimale.second;
+						politiqueOptimale(j, k) = pair_optimale.first;
+					}
+					vect.clear();
 				}
-				if (vect.size() > 0)
-				{
-					vect.push_back(coutsCumules(j, k));
-					temporaire(j, k) = *std::min_element(vect.begin(), vect.end(), myfn);
-					std::cout << temporaire << '\n' << std::endl;
-				}
-				vect.clear();
 			}
+			coutsCumules = temporaire;
 		}
-		coutsCumules = temporaire;
 	}
 
-	std::cout << coutsCumules << std::endl;
+	std::cout << coutsCumules << '\n' << politiqueOptimale << '\n' <<  std::endl;
 
 	return 0;
 }
