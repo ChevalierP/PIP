@@ -6,3 +6,6 @@
 *.tlog
 *.idb
 *.exe
+*.pdb
+*.log
+*.filters
