@@ -16,6 +16,14 @@ int main()
 		std::cout << "(" << s.first.x() << "," << s.first.y() << ") - (" << s.second.x() << "," << s.second.y() << ")" << std::endl;
 	});
 
+
+	/*wykobi::vector2d<float> getTrackAxis(PointType p)
+	{
+		wykobi::vector2d<float> v = wykobi::make_vector(-p.y, p.x);
+		return v;
+	}*/
+
+
 	return 0;
 }
 

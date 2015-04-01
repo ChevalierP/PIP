@@ -36,7 +36,7 @@ int main()
 	std::ofstream file("log.txt");
 
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 100 ; i++)
 	{
 		for (int j = 0; j < m.rows(); j++)
 		{
@@ -89,14 +89,13 @@ int main()
 					}
 					file << std::endl;
 					file << i << ' ' << j << ' ' << k << std::endl;
-
 					file << politiqueOptimale << std::endl << std::endl;
-					//std::cout << '\n' << coutsCumules << '\n \n' << politiqueOptimale << '\n' << std::endl;
 
 				}
 				vect.clear();
 			}
 		}
+		if (coutsCumules == temporaire)  { std::cout << "break at " << i << std::endl; break; }
 		coutsCumules = temporaire;
 	}
 
