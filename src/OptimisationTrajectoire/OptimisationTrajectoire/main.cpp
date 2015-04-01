@@ -4,7 +4,6 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <wykobi\wykobi.hpp>
-#include <Eigen\Eigen>
 #include <math.h>
 #include "State.h"
 #include "Vehicule.h"
@@ -23,6 +22,14 @@ int main()
 	const std::vector<Vehicule::StateType>& p = veh.GetPositions();
 	for(Vehicule::StateType s : p)
 		std::cout << s[0] << "," << s[1] << std::endl;
+
+	wykobi::vector2d<float> getTrackAxis(PointType p)
+	{
+		wykobi::vector2d<float> v = wykobi::make_vector(-p.y, p.x);
+		return v;
+	}
+
+
 	return 0;
 }
 
