@@ -89,9 +89,7 @@ int main()
 					}
 					file << std::endl;
 					file << i << ' ' << j << ' ' << k << std::endl;
-
 					file << politiqueOptimale << std::endl << std::endl;
-					//std::cout << '\n' << coutsCumules << '\n \n' << politiqueOptimale << '\n' << std::endl;
 
 				}
 				vect.clear();

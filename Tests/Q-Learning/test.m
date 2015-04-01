@@ -7,7 +7,7 @@ Q = zeros(6, 6);
 R = -ones(6);
 S = 1;
 N = randi(6);
-gamma = 0.9;
+gamma = 0.8;
 
 R(1, 5) = 0;
 R(2, 4) = 0; R(2, 6) = 100;
