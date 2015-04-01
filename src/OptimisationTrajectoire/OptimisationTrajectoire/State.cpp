@@ -40,6 +40,13 @@ bool Sensors::Compare(const Sensors* rhs) const
 	return std::lexicographical_compare(mDistances.begin(), mDistances.end(), rhs->mDistances.begin(), rhs->mDistances.end());
 }
 
+void Sensors::Foreach(float axis, std::function<float(point_t)> f)
+{
+	Container::iterator angit, distit;
+	for(angit = mAngles.begin(), distit = mDistances.begin(); angit != mAngles.end() && distit != mDistances.end(); angit++, distit++)
+		*distit = f(point_t(std::cos(axis + *angit), std::sin(axis + *angit)));
+}
+
 DiscreteSectorPolicy::DiscreteSectorPolicy(std::initializer_list<float> limits)
 {
 	std::copy(limits.begin(), limits.end(), std::back_inserter(mLimits));

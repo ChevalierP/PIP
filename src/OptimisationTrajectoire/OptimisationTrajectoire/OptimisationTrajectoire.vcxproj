@@ -76,13 +76,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="State.cpp" />
+    <ClCompile Include="Track.cpp" />
     <ClCompile Include="Vehicule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="State.h" />
     <ClInclude Include="Track.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Vehicule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -4,6 +4,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <vector>
+#include <functional>
+#include "Geometry.h"
 
 // Commande du véhicule en vitesse et en direction
 class Command
@@ -49,16 +51,20 @@ public:
 	static const float Right;
 	static const float Left;
 
+	using Container = std::vector<float>;
+
 	Sensors(std::initializer_list<float> angles);
 
 	bool operator<(const Sensors& rhs) const;
+	
+	void Foreach(float axis, std::function<float(point_t)> f);
 
 protected:
 	virtual bool Compare(const Sensors* rhs) const;
 
 protected:
-	std::vector<float> mAngles;
-	std::vector<float> mDistances;
+	Container mAngles;
+	Container mDistances;
 };
 
 template<class T>

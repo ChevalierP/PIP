@@ -35,3 +35,15 @@ void Vehicule::System(const StateType& x, StateType& dx, float t)
 	dx[1] =  speed*std::sin(x[2] - steering);
 	dx[2] = -speed*std::sin(steering)/mGravityCenter;
 }
+
+point_t Vehicule::GetLastPosition() const
+{
+	const StateType& s = mPosition.back();
+	return point_t(s[0], s[1]);
+}
+
+float Vehicule::GetAxis() const
+{
+	const StateType& s = mPosition.back();
+	return s[2];
+}

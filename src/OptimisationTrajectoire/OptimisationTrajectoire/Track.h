@@ -1,15 +1,27 @@
 #ifndef _PIP_TRACK_H_
 #define _PIP_TRACK_H_
 
-#include <wykobi\wykobi.hpp>
+#include "Geometry.h"
+
+class Vehicule;
 
 class Track
 {
 public:
-	using PolygonType = wykobi::polygon<float, 2>;
+	bool IsInside(point_t pt) const;
+	void UpdateSensors(Vehicule* veh) const;
 
-private:
-	PolygonType mPolygon;
+protected:
+	//virtual VectorType GetTrackAxis(PointType pt) const = 0;
+
+protected:
+	polygon_t mPolygon;
+};
+
+class TrackLine : public Track
+{
+public:
+
 };
 
 #endif // !_PIP_TRACK_H_

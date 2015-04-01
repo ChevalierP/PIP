@@ -1,7 +1,9 @@
 #ifndef _PIP_VEHICULE_H_
 #define _PIP_VEHICULE_H_
 
+#include <array>
 #include "State.h"
+#include "Geometry.h"
 
 class Sensors;
 
@@ -19,6 +21,10 @@ public:
 	void Sim();
 	
 	const std::vector<StateType>& GetPositions() const { return mPosition; }
+	point_t GetLastPosition() const;
+	float GetAxis() const;
+
+	Sensors* GetSensors() { return mSensors; }
 
 private:
 	void System(const StateType& x, StateType& dx, float t);
