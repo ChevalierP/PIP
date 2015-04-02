@@ -28,10 +28,9 @@ float ray_t::DistanceTo(const segment_t& segment) const
 
 	segment_t proj_on_ray_segment(proj_on_ray1, proj_on_ray2);
 	std::vector<point_t> output;
-
-	if (boost::geometry::intersection(segment, proj_on_ray_segment, output))
+	boost::geometry::intersection(segment, proj_on_ray_segment, output);
+	if(output.size())
 	{
-		boost::geometry::intersection(segment, proj_on_ray_segment, output);
 		point_t d(output[0].x() - mOrigin.x(), output[0].y() - mOrigin.y());
 		return std::sqrt(d.x()*d.x() + d.y()*d.y());
 	}
@@ -45,15 +44,10 @@ point_t ray_t::closest_point_on_ray(const point_t point) const
 
 	point_t pa(mOrigin.x() - point.x(), mOrigin.y() - point.y());
 	float pan = boost::geometry::dot_product(pa, normalized_mDirection);
-	point_t pann(pan*normalized_mDirection.x(), pan*normalized_mDirection.y());
+	point_t pann(-pan*normalized_mDirection.x(), -pan*normalized_mDirection.y());
 
 	point_t proj_on_ray(mOrigin.x() + pann.x(), mOrigin.y() + pann.y());
-
-	if (boost::geometry::dot_product(proj_on_ray, mDirection) >= 0)
-	{
+	if(boost::geometry::dot_product(pann, mDirection) > 0)
 		return proj_on_ray;
-	}
-
-
 	return mOrigin;
 }
