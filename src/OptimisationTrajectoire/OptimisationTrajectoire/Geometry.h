@@ -4,6 +4,8 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/segment.hpp>
+#include <boost\geometry.hpp>
+
 
 using point_t = boost::geometry::model::d2::point_xy<float>;
 using segment_t = boost::geometry::model::referring_segment<point_t>;
