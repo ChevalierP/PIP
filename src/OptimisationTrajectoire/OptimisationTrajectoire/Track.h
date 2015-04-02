@@ -12,7 +12,7 @@ public:
 	void UpdateSensors(Vehicule* veh) const;
 
 protected:
-	//virtual VectorType GetTrackAxis(PointType pt) const = 0;
+	virtual point_t GetTrackAxis(const point_t& pt) const = 0;
 
 protected:
 	polygon_t mPolygon;
@@ -21,7 +21,10 @@ protected:
 class TrackLine : public Track
 {
 public:
+	TrackLine(float length);
 
+protected:
+	virtual point_t GetTrackAxis(const point_t& pt) const;
 };
 
 #endif // !_PIP_TRACK_H_
