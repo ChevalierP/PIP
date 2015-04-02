@@ -19,6 +19,7 @@ public:
 	float DistanceTo(const segment_t& segment) const;
 
 private:
+	point_t ray_t::closest_point_on_ray(const point_t) const;
 
 private:
 	point_t mOrigin;
