@@ -12,7 +12,7 @@ class Vehicule
 public:
 	using StateType = std::array<float, 3>;
 
-	Vehicule();
+	Vehicule(Sensors* sensors);
 
 	void AddCommand(const Command& c);
 	template<class Itr>

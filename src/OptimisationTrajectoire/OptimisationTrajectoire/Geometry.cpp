@@ -1,3 +1,4 @@
+#include <boost\geometry.hpp>
 #include "Geometry.h"
 
 
@@ -12,7 +13,7 @@ float ray_t::DistanceTo(const polygon_t& polygon) const
 	// TODO
 	// for_each_segment -> DistanceTo(segment)
 	float min_distance = std::numeric_limits<float>::infinity();
-	boost::geometry::for_each_segment(polygon, [this,&min_distance](segment_t s) {
+	boost::geometry::for_each_segment(polygon, [this, &min_distance](segment_t s) {
 		float distance;
 		 distance = ray_t::DistanceTo(s);
 		 if (distance < min_distance)

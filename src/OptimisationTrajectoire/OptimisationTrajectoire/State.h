@@ -59,6 +59,8 @@ public:
 	
 	void Foreach(float axis, std::function<float(point_t)> f);
 
+	const Container& GetDistances() const { return mDistances; }
+
 protected:
 	virtual bool Compare(const Sensors* rhs) const;
 
@@ -81,5 +83,18 @@ protected:
 	PolicyType mPolicy;
 	std::vector<typename PolicyType::IndexType> mDiscreteDistances;
 };
+
+template<class T>
+DiscretizedSensors<T>::DiscretizedSensors(std::initializer_list<float> angles, PolicyType policy) :
+Sensors(angles), mPolicy(policy)
+{
+
+}
+
+template<class T>
+bool DiscretizedSensors<T>::Compare(const Sensors* rhs) const
+{
+	return true;
+}
 
 #endif // !_PIP_STATE_H_

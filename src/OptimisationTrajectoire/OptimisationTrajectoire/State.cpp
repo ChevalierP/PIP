@@ -28,6 +28,7 @@ const float Sensors::Right = -(float)M_PI/2;
 Sensors::Sensors(std::initializer_list<float> angles)
 {
 	std::copy(angles.begin(), angles.end(), std::back_inserter(mAngles));
+	mDistances.resize(angles.size());
 }
 
 bool Sensors::operator<(const Sensors& rhs) const
