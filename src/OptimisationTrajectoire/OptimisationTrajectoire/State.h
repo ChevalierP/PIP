@@ -23,14 +23,6 @@ private:
 	float mSteering;
 };
 
-/*template<class T>
-class DiscretizationPolicy
-{
-public:
-	using IndexType = T;
-	virtual IndexType Convert(float distance) = 0;
-};*/
-
 class DiscreteSectorPolicy
 {
 public:

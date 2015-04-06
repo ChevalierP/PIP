@@ -24,6 +24,8 @@ public:
 	point_t GetLastPosition() const;
 	float GetAxis() const;
 
+	const Command& GetLastCommand() const { return mCommand.back(); }
+
 	Sensors* GetSensors() { return mSensors; }
 
 private:
