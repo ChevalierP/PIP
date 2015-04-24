@@ -3,57 +3,24 @@
 #include <tuple>
 #include "State.h"
 
-Command::Command(float speed, float streering) : mSpeed(speed), mSteering(streering) {}
-
-Command& Command::operator=(Command rhs)
+Linspace::Linspace(float start, float end, int n) :
+mStart(start), mEnd(end), mCount(n - 1), mGen(std::random_device()), mRand(0, n - 1)
 {
-	std::swap(*this, rhs);
-	return *this;
+	
 }
 
-bool Command::operator<(const Command& rhs) const
+float Linspace::GetRandomValue() const
 {
-	return std::tie(mSpeed, mSteering) < std::tie(rhs.mSpeed, rhs.mSteering);
+	int i = mRand(mGen);
+	return mStart + i*(mEnd - mStart)/mCount;
 }
 
-std::tuple<float, float> Command::GetValue() const
-{
-	return std::make_tuple(mSpeed, mSteering);
-}
-
-const float Sensors::Front = 0;
-const float Sensors::Left = (float)M_PI/2;
-const float Sensors::Right = -(float)M_PI/2;
-
-Sensors::Sensors(std::initializer_list<float> angles)
-{
-	std::copy(angles.begin(), angles.end(), std::back_inserter(mAngles));
-	mDistances.resize(angles.size());
-}
-
-bool Sensors::operator<(const Sensors& rhs) const
-{
-	return Compare(&rhs);
-}
-
-bool Sensors::Compare(const Sensors* rhs) const
-{
-	return std::lexicographical_compare(mDistances.begin(), mDistances.end(), rhs->mDistances.begin(), rhs->mDistances.end());
-}
-
-void Sensors::Foreach(float axis, std::function<float(point_t)> f)
-{
-	Container::iterator angit, distit;
-	for(angit = mAngles.begin(), distit = mDistances.begin(); angit != mAngles.end() && distit != mDistances.end(); angit++, distit++)
-		*distit = f(point_t(std::cos(axis + *angit), std::sin(axis + *angit)));
-}
-
-DiscreteSectorPolicy::DiscreteSectorPolicy(std::initializer_list<float> limits)
+DiscreteSector::DiscreteSector(std::initializer_list<float> limits)
 {
 	std::copy(limits.begin(), limits.end(), std::back_inserter(mLimits));
 }
 
-DiscreteSectorPolicy::IndexType DiscreteSectorPolicy::Convert(float distance)
+int DiscreteSector::Convert(float distance)
 {
 	int index = 0;
 	for(float l : mLimits)
@@ -63,4 +30,40 @@ DiscreteSectorPolicy::IndexType DiscreteSectorPolicy::Convert(float distance)
 		index++;
 	}
 	return index;
+}
+
+StateSpace::StateSpace(const Linspace& speed, const Linspace& steering, const DiscreteSector& distance) :
+mSpeedSpace(speed), mSteeringSpace(steering), mDistanceSpace(distance)
+{
+
+}
+
+Command StateSpace::GenRandomCommand() const
+{
+	return Command(mSpeedSpace.GetRandomValue(), mSteeringSpace.GetRandomValue());
+}
+
+Sensors::Sensors(StateSpace* ss, std::initializer_list<float> angles) :
+mStateSpace(ss)
+{
+	std::copy(angles.begin(), angles.end(), std::back_inserter(mAngles));
+	mDistances.resize(mAngles.size());
+	mDiscreteDistances.resize(mAngles.size());
+}
+
+const float Sensors::Front = 0;
+const float Sensors::Left = (float)M_PI/2;
+const float Sensors::Right = -(float)M_PI/2;
+
+bool Sensors::operator<(const Sensors& rhs) const
+{
+	return mDiscreteDistances < rhs.mDiscreteDistances;
+}
+
+void Sensors::Foreach(float axis, std::function<float(point_t)> f)
+{
+	Container::const_iterator angit;
+	Container::iterator distit;
+	for(angit = mAngles.begin(), distit = mDistances.begin(); angit != mAngles.end() && distit != mDistances.end(); angit++, distit++)
+		*distit = f(point_t(std::cos(axis + *angit), std::sin(axis + *angit)));
 }

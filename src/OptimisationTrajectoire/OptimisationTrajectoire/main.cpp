@@ -27,8 +27,8 @@ int main()
 	}*/
 	
 	TrackLine tl(20);
-	DiscreteSectorPolicy policy({1});
-	DiscretizedSensors<DiscreteSectorPolicy> sensors({Sensors::Left, Sensors::Front, Sensors::Right}, policy);
+	StateSpace ss({0, 20, 5}, {-3.14f, 3.14f, 5}, {1});
+	Sensors sensors(&ss, {Sensors::Left, Sensors::Front, Sensors::Right});
 	Vehicule veh(&sensors);
 	tl.UpdateSensors(&veh);
 	for(float d : sensors.GetDistances())

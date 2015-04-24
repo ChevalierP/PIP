@@ -5,35 +5,58 @@
 #include <math.h>
 #include <vector>
 #include <functional>
+#include <random>
 #include "Geometry.h"
 
-// Commande du véhicule en vitesse et en direction
-class Command
+// Speed and steering
+using Command = std::tuple<float, float>;
+
+// Distances from sensors
+template<std::size_t N>
+using Observation = std::array<int, N>;
+
+class Linspace
 {
 public:
-	Command(float speed = 0, float steering = 0);
+	Linspace(float start, float end, int n);
 
-	Command& operator=(Command rhs);
-	bool operator<(const Command& rhs) const;
-
-	std::tuple<float, float> GetValue() const;
+	float GetRandomValue() const;
 
 private:
-	float mSpeed;
-	float mSteering;
+	float mStart;
+	float mEnd;
+	int mCount;
+	std::mt19937 mGen;
+	std::uniform_int_distribution<int> mRand;
 };
 
-class DiscreteSectorPolicy
+class DiscreteSector
 {
 public:
-	using IndexType = int;
+	using Container = std::vector<float>;
 
-	DiscreteSectorPolicy(std::initializer_list<float> limits);
+	DiscreteSector(std::initializer_list<float> limits);
 
-	IndexType Convert(float distance);
+	int Convert(float distance);
+
+	const Container& GetLimits() const { return mLimits; }
 
 private:
-	std::vector<float> mLimits;
+	Container mLimits;
+};
+
+class StateSpace
+{
+public:
+	StateSpace(const Linspace& speed, const Linspace& steering, const DiscreteSector& distance);
+
+	Command GenRandomCommand() const;
+	const DiscreteSector& GetDistanceSpace() const { return mDistanceSpace; }
+
+private:
+	Linspace mSpeedSpace;
+	Linspace mSteeringSpace;
+	DiscreteSector mDistanceSpace;
 };
 
 class Sensors
@@ -45,7 +68,7 @@ public:
 
 	using Container = std::vector<float>;
 
-	Sensors(std::initializer_list<float> angles);
+	Sensors(StateSpace* ss, std::initializer_list<float> angles);
 
 	bool operator<(const Sensors& rhs) const;
 	
@@ -54,39 +77,11 @@ public:
 	const Container& GetDistances() const { return mDistances; }
 
 protected:
-	virtual bool Compare(const Sensors* rhs) const;
-
-protected:
+	StateSpace* mStateSpace;
 	Container mAngles;
 	Container mDistances;
+	Container mDiscreteDistances;
+
 };
-
-template<class T>
-class DiscretizedSensors : public Sensors
-{
-public:
-	using PolicyType = T;
-	DiscretizedSensors(std::initializer_list<float> angles, PolicyType policy);
-
-protected:
-	virtual bool Compare(const Sensors* rhs) const;
-
-protected:
-	PolicyType mPolicy;
-	std::vector<typename PolicyType::IndexType> mDiscreteDistances;
-};
-
-template<class T>
-DiscretizedSensors<T>::DiscretizedSensors(std::initializer_list<float> angles, PolicyType policy) :
-Sensors(angles), mPolicy(policy)
-{
-
-}
-
-template<class T>
-bool DiscretizedSensors<T>::Compare(const Sensors* rhs) const
-{
-	return true;
-}
 
 #endif // !_PIP_STATE_H_

@@ -30,7 +30,7 @@ void Vehicule::System(const StateType& x, StateType& dx, float t)
 {
 	const Command& c = mCommand[mPosition.size()];
 	float speed, steering;
-	std::tie(speed, steering) = c.GetValue();
+	std::tie(speed, steering) = c;
 	dx[0] =  speed*std::cos(x[2] - steering);
 	dx[1] =  speed*std::sin(x[2] - steering);
 	dx[2] = -speed*std::sin(steering)/mGravityCenter;
