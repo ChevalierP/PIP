@@ -4,7 +4,7 @@
 Vehicule::Vehicule(Sensors* sensors) :
 mSensors(sensors), mGravityCenter(1), mCurrentTime(0.f), mTimeStep(0.1f)
 {
-	mPosition.push_back({1, 2, 0});
+
 }
 
 void Vehicule::AddCommand(const Command& c)
@@ -46,4 +46,12 @@ float Vehicule::GetAxis() const
 {
 	const StateType& s = mPosition.back();
 	return s[2];
+}
+
+void Vehicule::Reset(const StateType& position)
+{
+	mPosition.clear();
+	mPosition.push_back(position);
+	mCommand.clear();
+	mCurrentTime = 0;
 }

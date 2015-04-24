@@ -28,6 +28,8 @@ public:
 
 	Sensors* GetSensors() { return mSensors; }
 
+	void Reset(const StateType& position);
+
 private:
 	void System(const StateType& x, StateType& dx, float t);
 

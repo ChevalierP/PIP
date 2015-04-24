@@ -38,7 +38,7 @@ class QLearning
 public:
 	QLearning(StateSpace& ss, Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy);
 
-	void Sim();
+	void Sim(const Vehicule::StateType& position, const Command& command);
 
 private:
 	StateSpace& mStateSpace;
