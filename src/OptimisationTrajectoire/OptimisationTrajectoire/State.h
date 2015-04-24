@@ -37,7 +37,7 @@ public:
 
 	DiscreteSector(std::initializer_list<float> limits);
 
-	int Convert(float distance);
+	int Convert(float distance) const;
 
 	const Container& GetLimits() const { return mLimits; }
 

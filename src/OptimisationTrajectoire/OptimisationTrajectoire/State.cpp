@@ -22,7 +22,7 @@ DiscreteSector::DiscreteSector(std::initializer_list<float> limits)
 	std::copy(limits.begin(), limits.end(), std::back_inserter(mLimits));
 }
 
-int DiscreteSector::Convert(float distance)
+int DiscreteSector::Convert(float distance) const
 {
 	int index = 0;
 	for(float l : mLimits)
@@ -64,8 +64,12 @@ bool Sensors::operator<(const Sensors& rhs) const
 
 void Sensors::Foreach(float axis, std::function<float(point_t)> f)
 {
-	Container::const_iterator angit;
-	Container::iterator distit;
-	for(angit = mAngles.begin(), distit = mDistances.begin(); angit != mAngles.end() && distit != mDistances.end(); angit++, distit++)
+	Container::const_iterator angit = mAngles.begin();
+	Container::iterator distit = mDistances.begin();
+	Observation::iterator obsit = mDiscreteDistances.begin();
+	for(; angit != mAngles.end() && distit != mDistances.end() && obsit != mDiscreteDistances.end(); angit++, distit++, obsit++)
+	{
 		*distit = f(point_t(std::cos(axis + *angit), std::sin(axis + *angit)));
+		*obsit = mStateSpace->GetDistanceSpace().Convert(*distit);
+	}
 }

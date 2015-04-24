@@ -34,6 +34,9 @@ int main()
 	for(float d : sensors.GetDistances())
 		std::cout << d << " ";
 	std::cout << std::endl;
+	for(int i : sensors.GetObservation())
+		std::cout << i << " ";
+	std::cout << std::endl;
 	return 0;
 }
 
