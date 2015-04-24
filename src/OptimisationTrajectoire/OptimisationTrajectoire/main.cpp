@@ -5,8 +5,8 @@
 #include "Vehicule.h"
 #include "Track.h"
 #include "Geometry.h"
+#include "QLearning.h"
 
-#include <wykobi\wykobi.hpp>
 #include <boost\geometry.hpp>
 
 int main()
@@ -30,13 +30,11 @@ int main()
 	StateSpace ss({0, 20, 5}, {-3.14f, 3.14f, 5}, {1});
 	Sensors sensors(&ss, {Sensors::Left, Sensors::Front, Sensors::Right});
 	Vehicule veh(&sensors);
-	tl.UpdateSensors(&veh);
-	for(float d : sensors.GetDistances())
-		std::cout << d << " ";
-	std::cout << std::endl;
-	for(int i : sensors.GetObservation())
-		std::cout << i << " ";
-	std::cout << std::endl;
+	veh.AddCommand(std::make_tuple<float, float>(20, 0));
+	Quality q;
+	SpeedAxisReward rp;
+	QLearning<SpeedAxisReward> ql(ss, q, veh, tl, rp);
+	ql.Sim();
 	return 0;
 }
 

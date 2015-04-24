@@ -9,7 +9,7 @@
 class SpeedAxisReward
 {
 public:
-	float GetReward(const Sensors& sensors, const Command& command);
+	float GetReward(const Observation& obs, const Command& command) const;
 
 protected:
 
@@ -36,11 +36,12 @@ template<class T>
 class QLearning
 {
 public:
-	QLearning(Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy);
+	QLearning(StateSpace& ss, Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy);
 
 	void Sim();
 
 private:
+	StateSpace& mStateSpace;
 	Quality& mQuality;
 	Vehicule& mVehicule;
 	const Track& mTrack;

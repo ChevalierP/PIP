@@ -1,6 +1,6 @@
 template<class T>
-QLearning<T>::QLearning(Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy) :
-mQuality(quality), mVehicule(veh), mTrack(track), mRewardPolicy(rewardPolicy)
+QLearning<T>::QLearning(StateSpace& ss, Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy) :
+mStateSpace(ss), mQuality(quality), mVehicule(veh), mTrack(track), mRewardPolicy(rewardPolicy)
 {
 
 }
@@ -10,12 +10,14 @@ void QLearning<T>::Sim()
 {
 	Sensors* s = mVehicule.GetSensors();
 	int maxiter = 100;
-	while(mTrack.isInside(mVehicule.GetLastPosition()) && maxiter--)
+	float gamma = 0.8f;
+	while(mTrack.IsInside(mVehicule.GetLastPosition()) && maxiter--)
 	{
-		Command to;
-		float q = mRewardPolicy.GetReward(s, to) + gamma*mQuality.GetBestReward(*s, mVehicule.GetLastCommand(), to);
-		mQuality.UpdateCommandReward(*s, mVehicule.GetLastCommand(), to, q);
+		Command to = mStateSpace.GenRandomCommand();
+		float q = mRewardPolicy.GetReward(s->GetObservation(), to) + gamma*mQuality.GetBestReward(s->GetObservation(), mVehicule.GetLastCommand(), 0);
+		mQuality.UpdateCommandReward(s->GetObservation(), mVehicule.GetLastCommand(), to, q);
 		mVehicule.AddCommand(to);
 		mVehicule.Sim();
+		mTrack.UpdateSensors(&mVehicule);
 	}
 }

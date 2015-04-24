@@ -1,9 +1,9 @@
 #include "State.h"
 #include "QLearning.h"
 
-float SpeedAxisReward::GetReward(const Sensors& sensors, const Command& command)
+float SpeedAxisReward::GetReward(const Observation& obs, const Command& command) const
 {
-	return 0;
+	return std::get<0>(command);
 }
 
 Quality::CommandMap& Quality::GetCommandMap(const Observation& obs)
