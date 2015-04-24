@@ -2,7 +2,7 @@
 #include "Vehicule.h"
 
 Vehicule::Vehicule(Sensors* sensors) :
-mSensors(sensors), mGravityCenter(1), mCurrentTime(0.f), mTimeStep(0.1f)
+mSensors(sensors), mGravityCenter(1), mCurrentTime(0.f), mTimeStep(0.01f)
 {
 
 }

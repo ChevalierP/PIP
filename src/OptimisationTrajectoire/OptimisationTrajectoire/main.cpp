@@ -1,5 +1,6 @@
 #include <tuple>
 #include <iostream>
+#include <fstream>
 #include <math.h>
 #include "State.h"
 #include "Vehicule.h"
@@ -26,29 +27,32 @@ int main()
 		return v;
 	}*/
 	
-	TrackLine tl(20);
-	StateSpace ss({0, 20, 5}, {-1.57f, 1.57f, 5}, {1, 2, 3});
+	TrackLine tl(20000);
+	StateSpace ss({0, 20, 10}, {-0.785f, 0.785f, 10}, {1, 2, 3});
 	Sensors sensors(&ss, {Sensors::Left, Sensors::Front, Sensors::Right});
 	Vehicule veh(&sensors);
 	veh.AddCommand(std::make_tuple<float, float>(20, 0));
 	Quality q;
 	SpeedAxisReward rp;
 	QLearning<SpeedAxisReward> ql(ss, q, veh, tl, rp);
-	for(int i(0); i<1000; i++)
-		ql.Sim({1, 0, 0}, std::make_tuple(20.f, 0.f));
+	for(int i(0); i<10000; i++)
+		ql.Sim({1, 0, 0}, std::make_tuple(5.f, 0.f));
+
+	std::ofstream f("C:\\Users\\Eisenheim\\Desktop\\a");
 
 	veh.Reset({1, 0, 0});
-	veh.AddCommand(std::make_tuple(20.f, 0.f));
-	for(int i(0); i<50; i++)
+	veh.AddCommand(std::make_tuple(5.f, 0.f));
+	for(int i(0); i<1000; i++)
 	{
 		const point_t pt = veh.GetLastPosition();
-		std::cout << pt.x() << "," << pt.y() << std::endl;
+		f << pt.x() << "," << pt.y() << std::endl;
 
 		tl.UpdateSensors(&veh);
 		const Command& c = q.GetBestCommand(veh.GetSensors()->GetObservation(), veh.GetLastCommand());
 		veh.AddCommand(c);
 		veh.Sim();
 	}
+	f.close();
 	return 0;
 }
 

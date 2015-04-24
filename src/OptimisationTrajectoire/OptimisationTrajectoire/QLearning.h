@@ -9,7 +9,7 @@
 class SpeedAxisReward
 {
 public:
-	float GetReward(const Observation& obs, const Command& command) const;
+	float GetReward(const Observation& obs, const Command& command, const Vehicule& veh, const Track& track) const;
 
 protected:
 
@@ -27,6 +27,7 @@ public:
 	float GetBestReward(const Observation& obs, const Command& current, float def = 0);
 	const Command& GetBestCommand(const Observation& obs, const Command& current, const Command& def = Command());
 	void UpdateCommandReward(const Observation& obs, const Command& from, const Command& to, float q);
+	float Get(const Observation& obs, const Command& from, const Command& to) { return mQuality[obs][from][to]; }
 
 private:
 	SensorQuality mQuality;

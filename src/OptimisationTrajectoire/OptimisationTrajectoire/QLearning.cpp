@@ -1,9 +1,19 @@
+#include <boost/geometry/arithmetic/dot_product.hpp>
 #include "State.h"
 #include "QLearning.h"
 
-float SpeedAxisReward::GetReward(const Observation& obs, const Command& command) const
+float norm(const point_t& a)
 {
-	return std::get<0>(command);
+	return sqrt(a.x()*a.x() + a.y()*a.y());
+}
+
+float SpeedAxisReward::GetReward(const Observation& obs, const Command& command, const Vehicule& veh, const Track& track) const
+{
+	point_t vehaxis(std::cos(veh.GetAxis()), std::sin(veh.GetAxis()));
+	point_t trackaxis = track.GetTrackAxis(veh.GetLastPosition());
+	float ps = boost::geometry::dot_product(vehaxis, trackaxis);
+	//float cosa = ps/norm(trackaxis);
+	return std::get<0>(command)*(ps > 0 ? 1 : -1);
 }
 
 Quality::CommandMap& Quality::GetCommandMap(const Observation& obs)

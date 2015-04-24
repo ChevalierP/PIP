@@ -11,7 +11,6 @@ public:
 	bool IsInside(point_t pt) const;
 	void UpdateSensors(Vehicule* veh) const;
 
-protected:
 	virtual point_t GetTrackAxis(const point_t& pt) const = 0;
 
 protected:
