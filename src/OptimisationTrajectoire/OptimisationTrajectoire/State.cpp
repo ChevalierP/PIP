@@ -3,13 +3,15 @@
 #include <tuple>
 #include "State.h"
 
+std::random_device Linspace::mRD;
+
 Linspace::Linspace(float start, float end, int n) :
-mStart(start), mEnd(end), mCount(n - 1), mGen(std::random_device()), mRand(0, n - 1)
+mStart(start), mEnd(end), mCount(n - 1), mGen(mRD()), mRand(0, n - 1)
 {
 	
 }
 
-float Linspace::GetRandomValue() const
+float Linspace::GetRandomValue()
 {
 	int i = mRand(mGen);
 	return mStart + i*(mEnd - mStart)/mCount;
@@ -38,7 +40,7 @@ mSpeedSpace(speed), mSteeringSpace(steering), mDistanceSpace(distance)
 
 }
 
-Command StateSpace::GenRandomCommand() const
+Command StateSpace::GenRandomCommand()
 {
 	return Command(mSpeedSpace.GetRandomValue(), mSteeringSpace.GetRandomValue());
 }

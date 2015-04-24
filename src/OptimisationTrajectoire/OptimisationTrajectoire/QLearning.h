@@ -20,17 +20,13 @@ class Quality
 public:
 	using CommandQuality = std::map<Command, float>;
 	using CommandMap = std::map<Command, CommandQuality>;
-	using SensorQuality = std::map<Sensors, CommandMap>;
+	using SensorQuality = std::map<Observation, CommandMap>;
 
-	const CommandMap& GetCommandMap(const Sensors& sensors) const;
-	const CommandQuality& GetCommandQuality(const Sensors& sensors, const Command& current) const;
-	float GetBestReward(const Sensors& sensors, const Command& current, float def = 0) const;
-	const Command& GetBestCommand(const Sensors& sensors, const Command& current, const Command& def = Command()) const;
-	void UpdateCommandReward(const Sensors& sensors, const Command& from, const Command& to, float q);
-
-private:
-	CommandMap& GetCommandMap(const Sensors& sensors);
-	CommandQuality& GetCommandQuality(const Sensors& sensors, const Command& current);
+	CommandMap& GetCommandMap(const Observation& obs);
+	CommandQuality& GetCommandQuality(const Observation& obs, const Command& current);
+	float GetBestReward(const Observation& obs, const Command& current, float def = 0);
+	const Command& GetBestCommand(const Observation& obs, const Command& current, const Command& def = Command());
+	void UpdateCommandReward(const Observation& obs, const Command& from, const Command& to, float q);
 
 private:
 	SensorQuality mQuality;

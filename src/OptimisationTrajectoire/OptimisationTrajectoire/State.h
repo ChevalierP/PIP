@@ -12,20 +12,20 @@
 using Command = std::tuple<float, float>;
 
 // Distances from sensors
-template<std::size_t N>
-using Observation = std::array<int, N>;
+using Observation = std::vector<int>;
 
 class Linspace
 {
 public:
 	Linspace(float start, float end, int n);
 
-	float GetRandomValue() const;
+	float GetRandomValue();
 
 private:
 	float mStart;
 	float mEnd;
 	int mCount;
+	static std::random_device mRD;
 	std::mt19937 mGen;
 	std::uniform_int_distribution<int> mRand;
 };
@@ -50,7 +50,7 @@ class StateSpace
 public:
 	StateSpace(const Linspace& speed, const Linspace& steering, const DiscreteSector& distance);
 
-	Command GenRandomCommand() const;
+	Command GenRandomCommand();
 	const DiscreteSector& GetDistanceSpace() const { return mDistanceSpace; }
 
 private:
@@ -75,12 +75,13 @@ public:
 	void Foreach(float axis, std::function<float(point_t)> f);
 
 	const Container& GetDistances() const { return mDistances; }
+	const Observation& GetObservation() const { return mDiscreteDistances; }
 
 protected:
 	StateSpace* mStateSpace;
 	Container mAngles;
 	Container mDistances;
-	Container mDiscreteDistances;
+	Observation mDiscreteDistances;
 
 };
 
