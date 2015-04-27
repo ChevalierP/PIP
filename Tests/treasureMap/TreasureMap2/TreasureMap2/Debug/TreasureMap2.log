@@ -1,4 +1,4 @@
-﻿Build started 01/04/2015 09:12:54.
+﻿Build started 25/04/2015 15:43:58.
      1>Project "C:\Users\ChevalierP\Documents\GitHub\PIP\Tests\treasureMap\TreasureMap2\TreasureMap2\TreasureMap2.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -10,4 +10,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:21.22
+Time Elapsed 00:00:09.36

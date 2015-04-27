@@ -36,7 +36,7 @@ int main()
 	std::ofstream file("log.txt");
 
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 30; i++)
 	{
 		for (int j = 0; j < m.rows(); j++)
 		{
