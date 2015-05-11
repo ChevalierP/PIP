@@ -2,15 +2,14 @@
 #include <iostream>
 #include <fstream>
 #include "exemple.h"
+#include <random>
 
+std::random_device rd;
+std::mt19937 gen(rd());
 
-
-bool reachable( int state, int action)
+bool reachable(int state, int action)
 {
-	if (m1(state,action) != '-')
-		return true;
-	else
-		return false;
+	return m1(state, action) != '-';
 }
 
 int randomAction(int state)
@@ -18,40 +17,40 @@ int randomAction(int state)
 	int output;
 	do
 	{
-		output = min + (rand() * (int)(max - min) / max);
-
-	} while (!reachable(state, output));
+		std::uniform_int_distribution<> dis(min, max);
+		output = dis(gen);
+	} while(!reachable(state, output));
 
 	return output;
 }
 
 int rewardCharToInt(int state, int action)
 {
-	if (m1(state, action) == 'T')
-		return treasureReward;
-	else if (m1(state, action) == 'w')
-		return wallsReward;
-	else
-		return 0;
+	switch(m1(state, action))
+	{
+	case 'T': return treasureReward; break;
+	case 'w': return wallsReward; break;
+	case 'c': return caseReward; break;
+	default: return 0;
+	}
 }
 
 std::pair<double,int> maxOfRow(Eigen::Matrix<double, m1size, m1size> M, int state)
 {
-	std::pair<double, int> temp;
-	temp.first = 0;
-	temp.second = 0;
+	using mypair = std::pair<double, int>;
+	std::vector<mypair> row;
+	for(int i(0); i<M.cols(); i++)
+		row.emplace_back(M(state, i), i);
+	std::sort(row.begin(), row.end(), [](mypair l, mypair r) { return l.first > r.first; });
 
-	for (int i = 0; i < M.cols(); i++)
+	for(int i(0); i<M.cols(); i++)
 	{
-		if (M(state, i) >= temp.first)
-		{
-			temp.first = M(state, i);
-			temp.second = i;
-		}
+		if(reachable(state, row[i].second))
+			return row[i];
 	}
-	return temp;
+	std::cout << "err";
+	return std::make_pair(0, 0);
 }
-
 
 int main()
 {
@@ -67,41 +66,50 @@ int main()
 	int state1 = 0, state2 = 0, state3 = 0, state4 = 0;
 	int action1 = 0, action2 = 0, action3 = 0, action4 = 0;
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 100000; i++)
 	{
-		double r = rand();
+		std::uniform_real_distribution<> dis(0, 1);
+		double r = dis(gen);
 
-		if (r > 0.25)
+		action1 = randomAction(state1);
+		action2 = maxOfRow(Q2, state2).second;
+		if(r > 0.25) 
 			action3 = randomAction(state3);
 		else
 			action3 = maxOfRow(Q3, state3).second;
 
-		action1 = randomAction(state1);
-		action2 = maxOfRow(Q2, state2).second;
-		std::cout << "choix actions" << std::endl;
-
-
 		Q1(state1, action1) = rewardCharToInt(state1, action1) + gamma*maxOfRow(Q1, action1).first;
 		Q2(state2, action2) = rewardCharToInt(state2, action2) + gamma*maxOfRow(Q2, action2).first;
-		Q3(state3, action3) = rewardCharToInt(state3, action2) + gamma*maxOfRow(Q3, action2).first;
-		std::cout << "matrice qualité" << std::endl;
+		Q3(state3, action3) = rewardCharToInt(state3, action3) + gamma*maxOfRow(Q3, action3).first;
 
 		state1 = action1;
 		state2 = action2;
 		state3 = action3;
 		state4 = action4;
-		if (state1 == 25)
+		if (state1 == 24)
 			state1 = 0;
-		if (state2 == 25)
+		if (state2 == 24)
 			state2 = 0;
-		if (state3 == 25)
+		if (state3 == 24)
 			state3 = 0;
-		if (state4 == 25)
+		if (state4 == 24)
 			state4 = 0;
-
 	}
-	std::cout << Q1 << std::endl;
+	file << Q1 << std::endl;
 	file.close();
 
+	Eigen::Matrix<char, 5, 5> test;
+	test.setConstant('.');
+	int state = 0;
+	for(int i(0); i < 25; i++)
+	{
+		test(state/5, state%5) = 1;
+		std::cout << test << std::endl << std::endl;
+		std::cin.get();
+		if(state == 24) break;
+		state = maxOfRow(Q3, state).second;
+	}
+
+	system("pause");
 	return 0;
 }
