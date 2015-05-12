@@ -125,22 +125,22 @@ int main()
 			compteur4 = 0;
 		}
 	}
-	for (int i = 0; i < conv1.size(); i++)
+	for (unsigned int i = 0; i < conv1.size(); i++)
 	{
 		file << conv1[i] << std::endl;
 	}
 	file << '\t' << std::endl;
-	for (int i = 0; i < conv2.size(); i++)
+	for(unsigned int i = 0; i < conv2.size(); i++)
 	{
 		file << conv2[i] << std::endl;
 	}
 	file << '\t' << std::endl;
-	for (int i = 0; i < conv3.size(); i++)
+	for(unsigned int i = 0; i < conv3.size(); i++)
 	{
 		file << conv3[i] << std::endl;
 	}
 	file << '\t' << std::endl;
-	for (int i = 0; i < conv4.size(); i++)
+	for(unsigned int i = 0; i < conv4.size(); i++)
 	{
 		file << conv4[i] << std::endl;
 	}
