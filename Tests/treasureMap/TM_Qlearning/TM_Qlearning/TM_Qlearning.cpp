@@ -82,7 +82,7 @@ int RewardToTreasure(const Eigen::Matrix<double, m1size, m1size>& Q)
 int main()
 {
 	std::ofstream file("log.csv");
-	Eigen::Matrix<double, m1size, m1size> Q[3]; //exploration ; exploitation ; exploitation et exploration (proba fixe) ; exploitation puis exploration (proba variable)
+	Eigen::Matrix<double, m1size, m1size> Q[3]; //exploration ; exploitation et exploration (proba fixe) ; exploitation puis exploration (proba variable)
 	int state[3];
 	int action[3];
 	for(int i(0); i<3; i++)
@@ -92,7 +92,7 @@ int main()
 		action[i] = 0;
 	}
 
-	for (int i = 0; i < 5000; i++)
+	for (int i = 0; i < 2000; i++)
 	{
 		std::uniform_real_distribution<> dis(0, 1);
 		double r = dis(gen);
