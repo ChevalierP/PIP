@@ -7,13 +7,18 @@ float norm(const point_t& a)
 	return sqrt(a.x()*a.x() + a.y()*a.y());
 }
 
-float SpeedAxisReward::GetReward(const Observation& obs, const Command& command, const Vehicule& veh, const Track& track) const
+float SpeedAxisReward::GetReward(const Observation& obs, const Command& command, const Command& last, const Vehicule& veh, const Track& track) const
 {
+	if(track.IsInside(veh.GetLastPosition())) return -10;
 	point_t vehaxis(std::cos(veh.GetAxis()), std::sin(veh.GetAxis()));
 	point_t trackaxis = track.GetTrackAxis(veh.GetLastPosition());
 	float ps = boost::geometry::dot_product(vehaxis, trackaxis);
-	//float cosa = ps/norm(trackaxis);
-	return std::get<0>(command)*(ps > 0 ? 1 : -1);
+	float cosa = ps; // =ps/norm(trackaxis);
+	float reward = std::get<speed>(command)*cosa;
+
+	if(std::get<steering>(last) != std::get<steering>(command))
+		reward *= mSteeringCostFactor;
+	return reward;
 }
 
 Quality::CommandMap& Quality::GetCommandMap(const Observation& obs)

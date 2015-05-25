@@ -9,6 +9,8 @@
 #include "Geometry.h"
 
 // Speed and steering
+static const int speed = 0;
+static const int steering = 1;
 using Command = std::tuple<float, float>;
 
 // Distances from sensors

@@ -26,4 +26,16 @@ protected:
 	virtual point_t GetTrackAxis(const point_t& pt) const;
 };
 
+class TrackTurn : public Track
+{
+public:
+	TrackTurn(float length);
+	
+protected:
+	virtual point_t GetTrackAxis(const point_t& pt) const;
+
+protected:
+	float mLength;
+};
+
 #endif // !_PIP_TRACK_H_

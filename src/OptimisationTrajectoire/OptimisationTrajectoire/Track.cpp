@@ -30,3 +30,20 @@ point_t TrackLine::GetTrackAxis(const point_t& pt) const
 {
 	return point_t(1, 0);
 }
+
+TrackTurn::TrackTurn(float length) : 
+mLength(length)
+{
+	boost::geometry::append(mPolygon, point_t(0, 2.5f));
+	boost::geometry::append(mPolygon, point_t(length + 2.5f, 2.5f));
+	boost::geometry::append(mPolygon, point_t(length + 2.5f, -length));
+	boost::geometry::append(mPolygon, point_t(length - 2.5f, -length));
+	boost::geometry::append(mPolygon, point_t(length - 2.5f, -2.5f));
+	boost::geometry::append(mPolygon, point_t(0, -2.5f));
+	boost::geometry::append(mPolygon, point_t(0, 2.5f));
+}
+
+point_t TrackTurn::GetTrackAxis(const point_t& pt) const
+{
+	return (pt.x() - mLength < pt.y() ? point_t(1, 0) : point_t(0, -1));
+}
