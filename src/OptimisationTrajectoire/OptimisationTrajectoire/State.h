@@ -22,11 +22,16 @@ public:
 	Linspace(float start, float end, int n);
 
 	float GetRandomValue();
+	float GetConstrainedValue(float min_, float max_);
+
+	float max() const { return mEnd; }
+	float min() const { return mStart; }
 
 private:
 	float mStart;
 	float mEnd;
 	int mCount;
+	float mStep;
 	static std::random_device mRD;
 	std::mt19937 mGen;
 	std::uniform_int_distribution<int> mRand;
@@ -53,6 +58,7 @@ public:
 	StateSpace(const Linspace& speed, const Linspace& steering, const DiscreteSector& distance);
 
 	Command GenRandomCommand();
+	Command GenConstrainedCommand(const Command& last);
 	const DiscreteSector& GetDistanceSpace() const { return mDistanceSpace; }
 
 private:

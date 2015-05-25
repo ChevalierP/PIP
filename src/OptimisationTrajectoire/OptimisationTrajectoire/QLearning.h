@@ -26,7 +26,7 @@ public:
 
 	CommandMap& GetCommandMap(const Observation& obs);
 	CommandQuality& GetCommandQuality(const Observation& obs, const Command& current);
-	float GetBestReward(const Observation& obs, const Command& current, float def = -1000);
+	float GetBestReward(const Observation& obs, const Command& current, float def = 0);
 	const Command& GetBestCommand(const Observation& obs, const Command& current, const Command& def = Command());
 	void UpdateCommandReward(const Observation& obs, const Command& from, const Command& to, float q);
 	float Get(const Observation& obs, const Command& from, const Command& to) { return mQuality[obs][from][to]; }
@@ -41,7 +41,7 @@ class QLearning
 public:
 	QLearning(StateSpace& ss, Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy);
 
-	void Sim(const Vehicule::StateType& position, const Command& command);
+	bool Sim(const Vehicule::StateType& position, const Command& command);
 
 	QLearning& gamma(float gamma) { mGamma = gamma; return *this; }
 	QLearning& alpha(float alpha) { mAlpha = alpha; return *this; }

@@ -9,12 +9,14 @@ class Track
 {
 public:
 	bool IsInside(point_t pt) const;
+	bool HasFinished(point_t pt) const;
 	void UpdateSensors(Vehicule* veh) const;
 
 	virtual point_t GetTrackAxis(const point_t& pt) const = 0;
 
 protected:
 	polygon_t mPolygon;
+	polygon_t mFinishLine;
 };
 
 class TrackLine : public Track

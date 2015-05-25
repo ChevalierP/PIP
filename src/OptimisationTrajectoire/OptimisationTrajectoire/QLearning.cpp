@@ -9,15 +9,17 @@ float norm(const point_t& a)
 
 float SpeedAxisReward::GetReward(const Observation& obs, const Command& command, const Command& last, const Vehicule& veh, const Track& track) const
 {
-	if(track.IsInside(veh.GetLastPosition())) return -10;
+	if(track.HasFinished(veh.GetLastPosition())) return 100;
+	if(!track.IsInside(veh.GetLastPosition())) return -1000;
+
 	point_t vehaxis(std::cos(veh.GetAxis()), std::sin(veh.GetAxis()));
 	point_t trackaxis = track.GetTrackAxis(veh.GetLastPosition());
 	float ps = boost::geometry::dot_product(vehaxis, trackaxis);
 	float cosa = ps; // =ps/norm(trackaxis);
-	float reward = std::get<speed>(command)*cosa;
+	float reward = std::get<speed>(command)*cosa*cosa;
 
 	if(std::get<steering>(last) != std::get<steering>(command))
-		reward *= mSteeringCostFactor;
+		reward *= 1 - mSteeringCostFactor;
 	return reward;
 }
 

@@ -13,15 +13,15 @@
 
 int main()
 {	
-	//TrackLine tl(20000);
-	TrackTurn tl(50);
+	//TrackLine tl(50);
+	TrackTurn tl(25);
 	StateSpace ss({0, 20, 5}, {-0.2f, 0.2f, 31}, {0.5f, 1.f, 2.f}); // {-0.785f, 0.785f, 5}
 	Sensors sensors(&ss, {Sensors::Left, Sensors::Front, Sensors::Right});
 	Vehicule veh(&sensors);
 	veh.AddCommand(std::make_tuple<float, float>(20, 0));
 	Quality q;
 	SpeedAxisReward rp;
-	rp.steeringCostFactor(.9f);
+	rp.steeringCostFactor(0);
 	QLearning<SpeedAxisReward> ql(ss, q, veh, tl, rp);
 	ql.gamma(.9f).alpha(.6f);
 
@@ -32,7 +32,7 @@ int main()
 
 	veh.Reset({1, 0, 0});
 	veh.AddCommand(std::make_tuple(5.f, 0.f));
-	for(int i(0); i<50000; i++)
+	for(int i(0); i<1000; i++)
 	{
 		const point_t pt = veh.GetLastPosition();
 		f << pt.x() << "," << pt.y() << ",";

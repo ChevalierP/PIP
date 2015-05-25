@@ -7,6 +7,11 @@ bool Track::IsInside(point_t pt) const
 	return boost::geometry::within(pt, mPolygon);
 }
 
+bool Track::HasFinished(point_t pt) const
+{
+	return boost::geometry::within(pt, mFinishLine);
+}
+
 void Track::UpdateSensors(Vehicule* veh) const
 {
 	point_t origin = veh->GetLastPosition();
@@ -24,6 +29,12 @@ TrackLine::TrackLine(float length)
 	boost::geometry::append(mPolygon, point_t(length, -2.5));
 	boost::geometry::append(mPolygon, point_t(0, -2.5));
 	boost::geometry::append(mPolygon, point_t(0, 2.5));
+
+	boost::geometry::append(mFinishLine, point_t(length, 2.5));
+	boost::geometry::append(mFinishLine, point_t(length, -2.5));
+	boost::geometry::append(mFinishLine, point_t(length + 20, -2.5));
+	boost::geometry::append(mFinishLine, point_t(length + 20, 2.5));
+	boost::geometry::append(mFinishLine, point_t(length, 2.5));
 }
 
 point_t TrackLine::GetTrackAxis(const point_t& pt) const
@@ -41,6 +52,12 @@ mLength(length)
 	boost::geometry::append(mPolygon, point_t(length - 2.5f, -2.5f));
 	boost::geometry::append(mPolygon, point_t(0, -2.5f));
 	boost::geometry::append(mPolygon, point_t(0, 2.5f));
+
+	boost::geometry::append(mFinishLine, point_t(length + 2.5f, -length));
+	boost::geometry::append(mFinishLine, point_t(length - 2.5f, -length));
+	boost::geometry::append(mFinishLine, point_t(length - 2.5f, -length - 20));
+	boost::geometry::append(mFinishLine, point_t(length + 2.5f, -length - 20));
+	boost::geometry::append(mFinishLine, point_t(length + 2.5f, -length));
 }
 
 point_t TrackTurn::GetTrackAxis(const point_t& pt) const

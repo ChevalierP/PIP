@@ -6,7 +6,7 @@ mStateSpace(ss), mQuality(quality), mVehicule(veh), mTrack(track), mRewardPolicy
 }
 
 template<class T>
-void QLearning<T>::Sim(const Vehicule::StateType& position, const Command& command)
+bool QLearning<T>::Sim(const Vehicule::StateType& position, const Command& command)
 {
 	mVehicule.Reset(position);
 	mVehicule.AddCommand(command);
@@ -18,6 +18,7 @@ void QLearning<T>::Sim(const Vehicule::StateType& position, const Command& comma
 		const Observation& obs0 = s->GetObservation();
 		const Command& c0 = mVehicule.GetLastCommand();
 
+		//Command c1 = mStateSpace.GenConstrainedCommand(c0);
 		Command c1 = mStateSpace.GenRandomCommand();
 
 		mVehicule.AddCommand(c1);
@@ -31,4 +32,5 @@ void QLearning<T>::Sim(const Vehicule::StateType& position, const Command& comma
 		mQuality.UpdateCommandReward(obs0, c0, c1, q1);
 	}
 	//std::cout << maxiter << std::endl;
+	return mTrack.HasFinished(mVehicule.GetLastPosition());
 }
