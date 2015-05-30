@@ -57,7 +57,7 @@ Command StateSpace::GenRandomCommand()
 
 Command StateSpace::GenConstrainedCommand(const Command& last)
 {
-	float maxsteer = (1 - std::get<speed>(last)/(mSpeedSpace.max() + 1))*mSteeringSpace.max();
+	float maxsteer = (1 - std::get<speed>(last)/(mSpeedSpace.max() + 10))*mSteeringSpace.max();
 	return Command(mSpeedSpace.GetRandomValue(), mSteeringSpace.GetConstrainedValue(-maxsteer, maxsteer));
 }
 

@@ -16,7 +16,7 @@ float SpeedAxisReward::GetReward(const Observation& obs, const Command& command,
 	point_t trackaxis = track.GetTrackAxis(veh.GetLastPosition());
 	float ps = boost::geometry::dot_product(vehaxis, trackaxis);
 	float cosa = ps; // =ps/norm(trackaxis);
-	float reward = std::get<speed>(command)*cosa*cosa;
+	float reward = std::get<speed>(command)*cosa;
 
 	if(std::get<steering>(last) != std::get<steering>(command))
 		reward *= 1 - mSteeringCostFactor;

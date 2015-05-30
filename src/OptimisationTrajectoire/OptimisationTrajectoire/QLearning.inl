@@ -18,8 +18,8 @@ bool QLearning<T>::Sim(const Vehicule::StateType& position, const Command& comma
 		const Observation& obs0 = s->GetObservation();
 		const Command& c0 = mVehicule.GetLastCommand();
 
-		//Command c1 = mStateSpace.GenConstrainedCommand(c0);
-		Command c1 = mStateSpace.GenRandomCommand();
+		Command c1 = mStateSpace.GenConstrainedCommand(c0);
+		//Command c1 = mStateSpace.GenRandomCommand();
 
 		mVehicule.AddCommand(c1);
 		mVehicule.Sim();

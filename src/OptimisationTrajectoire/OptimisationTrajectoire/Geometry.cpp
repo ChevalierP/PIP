@@ -8,25 +8,25 @@ mOrigin(origin), mDirection(direction)
 	
 }
 
-float ray_t::DistanceTo(const polygon_t& polygon) const
+float ray_t::DistanceTo(const polygon_t& polygon, const segment_t& shadow) const
 {
 	float min_distance = std::numeric_limits<float>::infinity();
-	boost::geometry::for_each_segment(polygon, [this, &min_distance](segment_t s) {
-		float distance;
-		 distance = ray_t::DistanceTo(s);
-		 if (distance < min_distance)
-			 min_distance = distance;
+	boost::geometry::for_each_segment(polygon, [this, &min_distance, &shadow](ref_segment_t s) {
+		if(boost::geometry::equals(s, shadow)) return;
+		float distance = ray_t::DistanceTo(s);
+		if(distance < min_distance)
+			min_distance = distance;
 	});
 
 	return min_distance;
 }
 
-float ray_t::DistanceTo(const segment_t& segment) const
+float ray_t::DistanceTo(const ref_segment_t& segment) const
 {
 	point_t proj_on_ray1 = ray_t::closest_point_on_ray(segment.first);
 	point_t proj_on_ray2 = ray_t::closest_point_on_ray(segment.second);
 
-	segment_t proj_on_ray_segment(proj_on_ray1, proj_on_ray2);
+	ref_segment_t proj_on_ray_segment(proj_on_ray1, proj_on_ray2);
 	std::vector<point_t> output;
 	boost::geometry::intersection(segment, proj_on_ray_segment, output);
 	if(output.size())

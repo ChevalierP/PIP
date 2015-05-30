@@ -16,7 +16,8 @@ public:
 
 protected:
 	polygon_t mPolygon;
-	polygon_t mFinishLine;
+	polygon_t mFinishArea;
+	segment_t mFinishLine;
 };
 
 class TrackLine : public Track
@@ -33,6 +34,18 @@ class TrackTurn : public Track
 public:
 	TrackTurn(float length);
 	
+protected:
+	virtual point_t GetTrackAxis(const point_t& pt) const;
+
+protected:
+	float mLength;
+};
+
+class SoftTurn : public Track
+{
+public:
+	SoftTurn(float length);
+
 protected:
 	virtual point_t GetTrackAxis(const point_t& pt) const;
 

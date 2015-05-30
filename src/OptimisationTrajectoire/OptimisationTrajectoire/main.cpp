@@ -21,11 +21,11 @@ int main()
 	veh.AddCommand(std::make_tuple<float, float>(20, 0));
 	Quality q;
 	SpeedAxisReward rp;
-	rp.steeringCostFactor(0);
+	rp.steeringCostFactor(0.01f);
 	QLearning<SpeedAxisReward> ql(ss, q, veh, tl, rp);
 	ql.gamma(.9f).alpha(.6f);
 
-	for(int i(0); i<10000; i++)
+	for(int i(0); i<50000; i++)
 		ql.Sim({1, 0, 0}, std::make_tuple(5.f, 0.f));
 
 	std::ofstream f("C:\\Users\\Eisenheim\\Desktop\\a");
