@@ -5,52 +5,47 @@
 
 std::random_device rd;
 std::mt19937 gen(rd());
-int m1data[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+int m1data[] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+				 1, -2, 0, 0, 0, 0, 0, 0, 0, 0,
+				 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 const Eigen::Matrix<int, 10, 10, Eigen::RowMajor> m1(m1data);
 
-bool reachable(std::pair<int, int> state, std::pair<int, int> action, int dimension)
+using State = std::pair<int, int>;
+
+bool reachable(State state, State action, int dimension)
 {
 	int f = state.first + action.first;
 	int s = state.second + action.second;
-	return (f < dimension && f > 0 && s < dimension && s > 0);
+	return (f < dimension && f >= 0 && s < dimension && s >= 0);
 }
-std::pair<int, int> randomAction(std::pair<int, int> state, int dimension)
+
+State genState(int i)
 {
-	std::pair<int, int> output;
+	switch(i)
+	{
+	case 0: return std::make_pair(-1, 0);
+	case 1: return std::make_pair(0, -1);
+	case 2: return std::make_pair(1, 0);
+	case 3: return std::make_pair(0, 1);
+	}
+	return std::make_pair(0, 0);
+}
+
+State randomAction(State state, int dimension)
+{
+	State output;
 	do
 	{
 		std::uniform_int_distribution<> dis(0, 3);
-		int temp = dis(gen);
-		if (temp = 0) //up
-		{
-			output.first = -1;
-			output.second = 0;
-		}
-		if (temp = 1) //left
-		{
-			output.first = 0;
-			output.second = -1;
-		}
-		if (temp = 2) //down
-		{
-			output.first = 1;
-			output.second = 0;
-		}
-		if (temp = 3) //right
-		{
-			output.first = 0;
-			output.second = 1;
-		}
-	} while (!reachable(state, output, dimension));
+		output = genState(dis(gen));
+	} while(!reachable(state, output, dimension));
 
 	return output;
 }
@@ -66,84 +61,90 @@ double value(const Eigen::Matrix<int, 10, 10>& poly, int x, int y)
 	}
 	return value;
 }
-double maxReward(Eigen::MatrixXd Q, std::pair<int, int> state, int dimension)
+double maxReward(const Eigen::MatrixXd& Q, State state, int dimension, State* newState = nullptr)
 {
-	double maxR = 0;
-	std::pair<int, int> action;
-	action = std::make_pair(-1, 0);
-	if (reachable(state, action, dimension))
+	double maxR = -std::numeric_limits<double>::infinity();
+	for(int i(0); i < 4; i++)
 	{
-		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
-	}
-	action = std::make_pair(0, -1);
-	if (reachable(state, action, dimension))
-	{
-		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
-	}
-	action = std::make_pair(1, 0);
-	if (reachable(state, action, dimension))
-	{
-		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
-	}
-	action = std::make_pair(0, 1);
-	if (reachable(state, action, dimension))
-	{
-		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
-	}
+		State action = genState(i);
+		if(!reachable(state, action, dimension)) continue;
 
+		State s2 = std::make_pair(state.first + action.first, state.second + action.second);
+		double rec = Q(dimension*state.first + state.second, dimension*s2.first + s2.second);
+		if(maxR < rec)
+		{
+			maxR = rec;
+			if(newState)
+				*newState = s2;
+		}
+	}
 	return maxR;
 }
+
+bool isTreasure(const State& state, int dimension)
+{
+	return state.first == dimension - 1 && state.second == dimension - 1;
+}
+
 int main()
 {
 	const double alpha = 1;
 	const double gamma = 0.9;
-	const int dimension = 100;
+	const int dimension = 30;
+	const int qdim = dimension*dimension;
 	/*coefficients du polynome.
 	n°ligne = puissance de x
 	n°colonne = puissance de y*/
 	
 
 	//creation matrices de qualité
-	Eigen::MatrixXd Q[3];
+	Eigen::MatrixXd Q(qdim, qdim);
 	//initialisation des matrices
-	Q[1].setConstant(0);
-	Q[2].setConstant(0);
-	Q[3].setConstant(0);
+	Q.setConstant(-1000);
 	//creation de l'état (position de l'agent)
-	std::pair<int, int> state;
-	std::uniform_int_distribution<> dis(0, dimension);
+	State state;
+	std::uniform_int_distribution<> dis(0, dimension - 1);
 	//initialisation aléatoire de la position
 	state.first = dis(gen);	
 	state.second = dis(gen);
 
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < 10000000; i++)
 	{
 		//choix de l'action au hasard
 		std::pair<int, int> action1 = randomAction(state, dimension);
 
 		//récompense
-
-		int s = 100 * state.first + state.second;
-		int a = 100 * action1.first + action1.second;
-		int s2 = a + s;
+		int s = dimension * state.first + state.second;
 		std::pair<int, int> S2;
 		S2.first = state.first + action1.first;
 		S2.second = state.second + action1.second;
+		int s2 = dimension * S2.first + S2.second;
 		double r;
-		if (action1.first != 0){r = -(value(m1, state.first, state.second) + value(m1, state.first + action1.first, state.second)) / 2;}
-		else{r = -(value(m1, state.first, state.second) + value(m1, state.first, state.second + action1.second)) / 2;}
+		if(isTreasure(state, dimension))
+			r = 100000;
+		else if (action1.first != 0)
+			r = -(value(m1, state.first, state.second) + value(m1, state.first + action1.first, state.second)) / 2;
+		else
+			r = -(value(m1, state.first, state.second) + value(m1, state.first, state.second + action1.second)) / 2;
 
-		Q[1](s, a) = (1 - alpha)*Q[1](s, a) + gamma*(r + maxReward(Q[1], S2, dimension));
-		state.first += action1.first;
-		state.second += action1.second;
+		Q(s, s2) = (1 - alpha)*Q(s, s2) + gamma*(r + maxReward(Q, S2, dimension));
+		state = S2;
 
-		if (state.first == dimension - 1 && state.second == dimension - 1)
+		if(isTreasure(state, dimension))
 		{
-			state = std::make_pair(0, 0);
+			std::cout << "finished" << std::endl;
+			state = std::make_pair(dis(gen), dis(gen));
 		}
-
 	}
 	std::ofstream file("log.csv");
+
+	state = std::make_pair(0, 0);
+	int maxIter = 200;
+	do
+	{
+		file << state.first << "," << state.second << std::endl;
+		std::cout << maxReward(Q, state, dimension, &state) << std::endl;
+	} while(!isTreasure(state, dimension) && maxIter--);
 
 	file.close();
 
