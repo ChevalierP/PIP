@@ -1,80 +1,34 @@
 #include <Eigen\Eigen>
 #include <iostream>
 #include <fstream>
-#include "exemple.h"
 #include <random>
 
 std::random_device rd;
 std::mt19937 gen(rd());
+int m1data[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
+const Eigen::Matrix<int, 10, 10, Eigen::RowMajor> m1(m1data);
 
-double value(Eigen::Matrix<double, m1size, m1size> M, int x, int y)
+bool reachable(std::pair<int, int> state, std::pair<int, int> action, int dimension)
 {
-	double value = 0;
-	for (int i = 0; i < m1size; i++)
-	{
-		for (int j = 0; j < m1size; j++)
-		{
-			value += M(i,j) * pow(x, i) * pow(y, j);
-		}
-	}
-	return value;
+	int f = state.first + action.first;
+	int s = state.second + action.second;
+	return (f < dimension && f > 0 && s < dimension && s > 0);
 }
-
-Eigen::Matrix<int, m1size, m1size> polyDerive(Eigen::Matrix<double, m1size, m1size> M, int dir) // dir = 0 --> x dir = 1 --> y
-{
-	Eigen::Matrix < int, m1size, m1size > M;
-
-	if (dir = 0)
-	{
-		for (int i = 0; i < m1size; i++)
-		{
-			for (int j = 0; j < m1size; j++)
-			{
-				if (i = m1size) M(i, j) = 0;
-				else M(i, j) = M(i + 1, j)*(i + 1);
-			}
-		}
-	}
-	if (dir = 1)
-	{
-		for (int i = 0; i < m1size; i++)
-		{
-			for (int j = 0; j < m1size; j++)
-			{
-				if (j = m1size) M(i, j) = 0;
-				else M(i, j) = M(i, j + 1)*(j + 1);
-			}
-		}
-	}
-
-	return M;
-}
-
-bool reachable(std::pair<int , int> state, std::pair<int,int> action)
-{
-	if (action.first == -1 && action.second == 0) //up
-	{
-		return (state.first - 1) > 0;
-	}
-	if (action.first == 0 && action.second == -1) //left
-	{
-		return (state.second - 1) > 0;
-	}
-	if (action.first == 1 && action.second == 0) //down
-	{
-		return (state.first + 1) < dim;
-	}
-	if (action.first == 0 && action.second == 1) //right
-	{
-		return (state.second + 1) < dim;
-	}
-}
-std::pair<int, int> randomAction(std::pair<int, int> state)
+std::pair<int, int> randomAction(std::pair<int, int> state, int dimension)
 {
 	std::pair<int, int> output;
 	do
 	{
-		std::uniform_int_distribution<> dis(0, 4);
+		std::uniform_int_distribution<> dis(0, 3);
 		int temp = dis(gen);
 		if (temp = 0) //up
 		{
@@ -96,113 +50,100 @@ std::pair<int, int> randomAction(std::pair<int, int> state)
 			output.first = 0;
 			output.second = 1;
 		}
-	} while (!reachable(state, output));
+	} while (!reachable(state, output, dimension));
 
 	return output;
 }
-
-std::pair<std::pair<int, int>, double> maxOfRow(Eigen::Matrix<double, m1size, m1size> Q, std::pair<int, int> state, Eigen::Matrix<double, m1size, m1size> dX, Eigen::Matrix<double, m1size, m1size> dY)
+double value(const Eigen::Matrix<int, 10, 10>& poly, int x, int y)
 {
-	using mypair = std::pair<std::pair<int,int>, double>;
-	std::vector<mypair> row;
-	if (reachable(state, std::make_pair(-1,0)))
-		row.emplace_back(std::make_pair(-1,0), dX(state.first - 1, state.second));
-	if (reachable(state, std::make_pair(0, -1)))
-		row.emplace_back(std::make_pair(0, -1), dY(state.first , state.second - 1));
-	if (reachable(state, std::make_pair(1, 0)))
-		row.emplace_back(std::make_pair(1, 0), dX(state.first + 1, state.second));
-	if (reachable(state, std::make_pair(0, 1)))
-		row.emplace_back(std::make_pair(0, 1), dX(state.first, state.second + 1));
-
-	std::sort(row.begin(), row.end(), [](mypair l, mypair r) { return l.second > r.second; });
-	return row[0];
-}
-
-int ActionCountToTreasure(const Eigen::Matrix<double, m1size, m1size>& Q)
-{
-	const int niter = 100;
-	int state = 0;
-	for (int i(0); i < niter; i++)
+	double value = 0;
+	for (int i = 0; i < 10; i++)
 	{
-		if (state == 24) return i;
-		state = maxOfRow(Q, state).second;
+		for (int j = 0; j < 10; j++)
+		{
+			value += poly(i, j)*pow(x, i)*pow(y, j);
+		}
 	}
-	return niter;
+	return value;
 }
-
-int RewardToTreasure(const Eigen::Matrix<double, m1size, m1size>& Q)
+double maxReward(Eigen::MatrixXd Q, std::pair<int, int> state, int dimension)
 {
-	const int niter = 100;
-	int state = 0;
-	int reward = 0;
-	for (int i(0); i < niter; i++)
+	double maxR = 0;
+	std::pair<int, int> action;
+	action = std::make_pair(-1, 0);
+	if (reachable(state, action, dimension))
 	{
-		int action = maxOfRow(Q, state).second;
-		reward += value(m1, state, action);
-		state = action;
-		if (state == 24) return reward;
+		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
 	}
-	return reward;
-}
+	action = std::make_pair(0, -1);
+	if (reachable(state, action, dimension))
+	{
+		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
+	}
+	action = std::make_pair(1, 0);
+	if (reachable(state, action, dimension))
+	{
+		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
+	}
+	action = std::make_pair(0, 1);
+	if (reachable(state, action, dimension))
+	{
+		if (maxR < Q(state.first + action.first, state.second + action.second)){ maxR = Q(state.first + action.first, state.second + action.second); }
+	}
 
+	return maxR;
+}
 int main()
 {
-	Eigen::Matrix<double, m1size, m1size> dX;
-	Eigen::Matrix<double, m1size, m1size> dY;
-	dX = polyDerive(dX, 0);
-	dY = polyDerive(dY, 1);
-	Eigen::Matrix<double, dim, dim> reward[2];
-	for (int i = 0; i < dim; i++)
-	{
-		for (int j = 0; j < dim; j++)
-		{
-			reward[0](i, j) = value(dX, i, j);
-			reward[1](i, j) = value(dY, i, j);
-		}
-	}
+	const double alpha = 1;
+	const double gamma = 0.9;
+	const int dimension = 100;
+	/*coefficients du polynome.
+	n°ligne = puissance de x
+	n°colonne = puissance de y*/
+	
 
+	//creation matrices de qualité
+	Eigen::MatrixXd Q[3];
+	//initialisation des matrices
+	Q[1].setConstant(0);
+	Q[2].setConstant(0);
+	Q[3].setConstant(0);
+	//creation de l'état (position de l'agent)
+	std::pair<int, int> state;
+	std::uniform_int_distribution<> dis(0, dimension);
+	//initialisation aléatoire de la position
+	state.first = dis(gen);	
+	state.second = dis(gen);
+
+	for (int i = 0; i < 10000; i++)
+	{
+		//choix de l'action au hasard
+		std::pair<int, int> action1 = randomAction(state, dimension);
+
+		//récompense
+
+		int s = 100 * state.first + state.second;
+		int a = 100 * action1.first + action1.second;
+		int s2 = a + s;
+		std::pair<int, int> S2;
+		S2.first = state.first + action1.first;
+		S2.second = state.second + action1.second;
+		double r;
+		if (action1.first != 0){r = -(value(m1, state.first, state.second) + value(m1, state.first + action1.first, state.second)) / 2;}
+		else{r = -(value(m1, state.first, state.second) + value(m1, state.first, state.second + action1.second)) / 2;}
+
+		Q[1](s, a) = (1 - alpha)*Q[1](s, a) + gamma*(r + maxReward(Q[1], S2, dimension));
+		state.first += action1.first;
+		state.second += action1.second;
+
+		if (state.first == dimension - 1 && state.second == dimension - 1)
+		{
+			state = std::make_pair(0, 0);
+		}
+
+	}
 	std::ofstream file("log.csv");
-	Eigen::Matrix<double, dim, dim> Q[3]; //exploration ; exploitation et exploration (proba fixe) ; exploitation puis exploration (proba variable)
-	std::pair<int,int> state[3];
-	std::pair<int,int> action[3];
-	for (int i(0); i<3; i++)
-	{
-		Q[i].setConstant(0);
-		state[i].first = 0;
-		state[i].second = 0;
-		action[i].first = 0;
-		action[i].second = 0;
-	}
-
-	for (int i = 0; i < 2000; i++)
-	{
-		std::uniform_real_distribution<> dis(0, 1);
-		double r = dis(gen);
-
-		action[0] = randomAction(state[0]);
-		if (r > 0.01)
-			action[1] = randomAction(state[1]);
-		else
-			action[1] = maxOfRow(Q[1], state[1], dX, dY);
-
-		for (int i(0); i<3; i++)
-		{
-			if (action[i].first != 0)
-				Q[i](state[i], action[i]) = dY(state[i].first + action[i].first, state[i].second + action[i].second) + gamma*maxOfRow(Q[i], action[i], dX, dY).second;
-			else
-				Q[i](state[i], action[i]) = dX(state[i].first + action[i].first, state[i].second + action[i].second) + gamma*maxOfRow(Q[i], action[i], dX, dY).second;
-			state[i] = action[i];
-			if (state[i].first == 100 && state[i].second == 100)
-			{
-				std::uniform_int_distribution<> dis(0, dim - 1);
-				state[i].first = dis(gen);
-				state[i].second = dis(gen);
-			}
-		}
-		for (int i(0); i<3; i++)
-			file << RewardToTreasure(Q[i]) << ",";
-		file << std::endl;
-	}
 
 	file.close();
 
