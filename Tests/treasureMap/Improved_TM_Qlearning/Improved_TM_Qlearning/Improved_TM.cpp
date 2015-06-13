@@ -116,14 +116,14 @@ int main()
 	state[1].second = dis(gen);
 
 	std::pair<int, int> action[2];
-	for (int i = 0; i < 10000000; i++)
+	for (int i = 0; i < 5000; i++)
 	{
 		//choix de l'action au hasard
 		action[0] = randomAction(state[0], dimension);
 
 		//choix de  l'action (exploration + exploitation)
-		std::uniform_int_distribution<> dis(0, 100);
-		double temp = dis(gen);
+		std::uniform_int_distribution<> expl(0, 100);
+		double temp = expl(gen);
 		if (temp >= 5) 
 		{
 			// choix de l'action au hasard
@@ -133,27 +133,27 @@ int main()
 		{
 			State newState;
 			maxReward(Q2, state[1], dimension, &newState);
-			std::pair<int, int> action2 = std::make_pair(newState.first - state[1].first, newState.second - state[1].second);
+			action[1] = std::make_pair(newState.first - state[1].first, newState.second - state[1].second);
 		}
 
 
 		//récompense
-		for (int i = 0; i < 2 ; i++)
+		for (int j = 0; j < 2 ; j++)
 		{
-			int s = dimension * state[i].first + state[i].second;
+			int s = dimension * state[j].first + state[j].second;
 			std::pair<int, int> S;
-			S.first = state[i].first + action[i].first;
-			S.second = state[i].second + action[i].second;
+			S.first = state[j].first + action[j].first;
+			S.second = state[j].second + action[j].second;
 			int nextState = dimension * S.first + S.second;
 			double r;
-			if (isTreasure(state[i], dimension))
+			if (isTreasure(state[j], dimension))
 				r = 100000;
-			else if (action[i].first != 0)
-				r = -(value(m1, state[i].first, state[i].second) + value(m1, state[i].first + action[i].first, state[i].second)) / 2;
+			else if (action[j].first != 0)
+				r = -(value(m1, state[j].first, state[j].second) + value(m1, state[j].first + action[j].first, state[j].second)) / 2;
 			else
-				r = -(value(m1, state[i].first, state[i].second) + value(m1, state[i].first, state[i].second + action[i].second)) / 2;
+				r = -(value(m1, state[j].first, state[j].second) + value(m1, state[j].first, state[j].second + action[j].second)) / 2;
 
-			if (i = 0)
+			if (j == 0)
 			{
 				Q(s, nextState) = (1 - alpha)*Q(s, nextState) + gamma*(r + maxReward(Q, S, dimension));
 			}
@@ -162,12 +162,12 @@ int main()
 				Q2(s, nextState) = (1 - alpha)*Q(s, nextState) + gamma*(r + maxReward(Q, S, dimension));
 			}
 
-			state[i] = S;
+			state[j] = S;
 
-			if (isTreasure(state[i], dimension))
+			if (isTreasure(state[j], dimension))
 			{
 				std::cout << "finished" << std::endl;
-				state[i] = std::make_pair(dis(gen), dis(gen));
+				state[j] = std::make_pair(dis(gen), dis(gen));
 			}
 		}
 	}
