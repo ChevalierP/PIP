@@ -98,56 +98,103 @@ int main()
 	
 
 	//creation matrices de qualité
+		//exploration pure
 	Eigen::MatrixXd Q(qdim, qdim);
+		//Exploration + exploitation (proba constante)
+	Eigen::MatrixXd Q2(qdim, qdim);
 	//initialisation des matrices
 	Q.setConstant(-1000);
+	Q2.setConstant(-1000);
 	//creation de l'état (position de l'agent)
-	State state;
+	State state [2];
+
 	std::uniform_int_distribution<> dis(0, dimension - 1);
 	//initialisation aléatoire de la position
-	state.first = dis(gen);	
-	state.second = dis(gen);
+	state[0].first = dis(gen);	
+	state[0].second = dis(gen);
+	state[1].first = dis(gen);
+	state[1].second = dis(gen);
 
+	std::pair<int, int> action[2];
 	for (int i = 0; i < 10000000; i++)
 	{
 		//choix de l'action au hasard
-		std::pair<int, int> action1 = randomAction(state, dimension);
+		action[0] = randomAction(state[0], dimension);
+
+		//choix de  l'action (exploration + exploitation)
+		std::uniform_int_distribution<> dis(0, 100);
+		double temp = dis(gen);
+		if (temp >= 5) 
+		{
+			// choix de l'action au hasard
+				action[1] = randomAction(state[1], dimension);
+		}
+		else //optimale
+		{
+			State newState;
+			maxReward(Q2, state[1], dimension, &newState);
+			std::pair<int, int> action2 = std::make_pair(newState.first - state[1].first, newState.second - state[1].second);
+		}
+
 
 		//récompense
-		int s = dimension * state.first + state.second;
-		std::pair<int, int> S2;
-		S2.first = state.first + action1.first;
-		S2.second = state.second + action1.second;
-		int s2 = dimension * S2.first + S2.second;
-		double r;
-		if(isTreasure(state, dimension))
-			r = 100000;
-		else if (action1.first != 0)
-			r = -(value(m1, state.first, state.second) + value(m1, state.first + action1.first, state.second)) / 2;
-		else
-			r = -(value(m1, state.first, state.second) + value(m1, state.first, state.second + action1.second)) / 2;
-
-		Q(s, s2) = (1 - alpha)*Q(s, s2) + gamma*(r + maxReward(Q, S2, dimension));
-		state = S2;
-
-		if(isTreasure(state, dimension))
+		for (int i = 0; i < 2 ; i++)
 		{
-			std::cout << "finished" << std::endl;
-			state = std::make_pair(dis(gen), dis(gen));
+			int s = dimension * state[i].first + state[i].second;
+			std::pair<int, int> S;
+			S.first = state[i].first + action[i].first;
+			S.second = state[i].second + action[i].second;
+			int nextState = dimension * S.first + S.second;
+			double r;
+			if (isTreasure(state[i], dimension))
+				r = 100000;
+			else if (action[i].first != 0)
+				r = -(value(m1, state[i].first, state[i].second) + value(m1, state[i].first + action[i].first, state[i].second)) / 2;
+			else
+				r = -(value(m1, state[i].first, state[i].second) + value(m1, state[i].first, state[i].second + action[i].second)) / 2;
+
+			if (i = 0)
+			{
+				Q(s, nextState) = (1 - alpha)*Q(s, nextState) + gamma*(r + maxReward(Q, S, dimension));
+			}
+			else
+			{
+				Q2(s, nextState) = (1 - alpha)*Q(s, nextState) + gamma*(r + maxReward(Q, S, dimension));
+			}
+
+			state[i] = S;
+
+			if (isTreasure(state[i], dimension))
+			{
+				std::cout << "finished" << std::endl;
+				state[i] = std::make_pair(dis(gen), dis(gen));
+			}
 		}
 	}
-	std::ofstream file("log.csv");
-
-	state = std::make_pair(0, 0);
-	int maxIter = 200;
-	do
+	std::ofstream file("log_exploration.csv");
+	std::ofstream file2("log_combinaison.csv");
+	for (int i = 0; i < 2; i++)
 	{
-		file << state.first << "," << state.second << std::endl;
-		std::cout << maxReward(Q, state, dimension, &state) << std::endl;
-	} while(!isTreasure(state, dimension) && maxIter--);
+		state[i] = std::make_pair(0, 0);
+		int maxIter = 200;
+		do
+		{
+			if (i = 0)
+			{
+				file << state[i].first << "," << state[i].second << std::endl;
+				std::cout << maxReward(Q, state[i], dimension, &state[i]) << std::endl;
+			}
+			if (i = 1)
+			{
+				file2 << state[i].first << "," << state[i].second << std::endl;
+				std::cout << maxReward(Q, state[i], dimension, &state[i]) << std::endl;
+			}
 
+			
+		} while (!isTreasure(state[i], dimension) && maxIter--);
+	}
 	file.close();
-
+	file2.close();
 	system("pause");
 	return 0;
 }
