@@ -5,16 +5,16 @@
 #include "State.h"
 #include "Vehicule.h"
 #include "Track.h"
+#include "Config.h"
 
 class SpeedAxisReward
 {
 public:
+	SpeedAxisReward(Config& config);
 	float GetReward(const Observation& obs, const Command& command, const Command& last, const Vehicule& veh, const Track& track) const;
 
-	SpeedAxisReward& steeringCostFactor(float factor) { mSteeringCostFactor = factor; return *this; }
-
 protected:
-	float mSteeringCostFactor;
+	Config& mConfig;
 };
 
 class Quality
@@ -35,26 +35,23 @@ private:
 	SensorQuality mQuality;
 };
 
+
+enum class StateChoicePolicy { Exploration, Exploitation};
 template<class T>
 class QLearning
 {
 public:
-	QLearning(StateSpace& ss, Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy);
+	QLearning(Config& config, StateSpace& ss, Quality& quality, Vehicule& veh, const Track& track, const T& rewardPolicy);
 
-	bool Sim(const Vehicule::StateType& position, const Command& command);
-
-	QLearning& gamma(float gamma) { mGamma = gamma; return *this; }
-	QLearning& alpha(float alpha) { mAlpha = alpha; return *this; }
+	bool Sim(const Vehicule::StateType& position, const Command& command, StateChoicePolicy scp);
 
 private:
+	Config& mConfig;
 	StateSpace& mStateSpace;
 	Quality& mQuality;
 	Vehicule& mVehicule;
 	const Track& mTrack;
 	const T& mRewardPolicy;
-
-	float mGamma;
-	float mAlpha;
 };
 
 #include "QLearning.inl"

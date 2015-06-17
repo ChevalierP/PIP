@@ -161,6 +161,7 @@
     <ClCompile Include="Vehicule.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="QLearning.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="Track.h" />

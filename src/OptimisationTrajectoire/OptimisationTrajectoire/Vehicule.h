@@ -14,6 +14,8 @@ public:
 
 	Vehicule(Sensors* sensors);
 
+	float GetGravityCenterPosition() const { return mGravityCenter; }
+
 	void AddCommand(const Command& c);
 	template<class Itr>
 	void AddCommand(Itr begin, Itr end);

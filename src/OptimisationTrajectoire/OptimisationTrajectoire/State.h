@@ -73,6 +73,8 @@ public:
 	static const float Front;
 	static const float Right;
 	static const float Left;
+	static const float FrontLeft;
+	static const float FrontRight;
 
 	using Container = std::vector<float>;
 

@@ -2,15 +2,36 @@
 #include "State.h"
 #include "QLearning.h"
 
+#include <iostream>
+
 float norm(const point_t& a)
 {
 	return sqrt(a.x()*a.x() + a.y()*a.y());
 }
 
+SpeedAxisReward::SpeedAxisReward(Config& config) : mConfig(config)
+{
+
+}
+
 float SpeedAxisReward::GetReward(const Observation& obs, const Command& command, const Command& last, const Vehicule& veh, const Track& track) const
 {
-	if(track.HasFinished(veh.GetLastPosition())) return 100;
-	if(!track.IsInside(veh.GetLastPosition())) return -1000;
+	if(mConfig.rewardFinish() && track.HasFinished(veh.GetLastPosition()))
+		return mConfig.finishLineReward();
+	if(mConfig.rewardOffTrack() && !track.IsInside(veh.GetLastPosition()))
+		return mConfig.offTrackCost();
+
+	float mu = mConfig.coefficientOfFriction();
+	float g = mConfig.accelerationOfGravity();
+	float l = veh.GetGravityCenterPosition();
+	float theta = std::get<steering>(command);
+	
+	if(mConfig.rewardSkid())
+	{
+		float maxspeed = std::sqrt(mu*l*g/std::abs(std::sin(theta)));
+		if(std::get<speed>(command) > maxspeed)
+			return mConfig.skidCost();
+	}
 
 	point_t vehaxis(std::cos(veh.GetAxis()), std::sin(veh.GetAxis()));
 	point_t trackaxis = track.GetTrackAxis(veh.GetLastPosition());
@@ -18,8 +39,8 @@ float SpeedAxisReward::GetReward(const Observation& obs, const Command& command,
 	float cosa = ps; // =ps/norm(trackaxis);
 	float reward = std::get<speed>(command)*cosa;
 
-	if(std::get<steering>(last) != std::get<steering>(command))
-		reward *= 1 - mSteeringCostFactor;
+	if(mConfig.rewardSteeringChange() && std::get<steering>(last) != std::get<steering>(command))
+		reward *= 1 - mConfig.steeringCostFactor();
 	return reward;
 }
 
