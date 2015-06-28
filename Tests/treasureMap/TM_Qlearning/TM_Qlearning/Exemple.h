@@ -3,6 +3,7 @@
 
 #include <Eigen\Eigen>
 
+//paramètres modifiables
 static const int size = 5;
 static const double gamma = 0.9;
 static const int m1size = size*size;

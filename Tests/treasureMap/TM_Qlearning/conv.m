@@ -9,5 +9,4 @@ plot(1:size(a,1), a(:,2), 'b')
 title('reward = f( iteration number)');
 xlabel('iteration number');
 ylabel('reward');
-%%plot(1:size(a,1), a(:,3), 'g')
 

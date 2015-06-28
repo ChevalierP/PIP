@@ -1,10 +1,14 @@
 clc
 close all
 clear all
+%%ce script trace la valeur de la récompense sur le chemin otpiml en
+%%fonction du nombre d'itérations effectuées.
 
-explo = csvread('recompense_exploration.csv');
-combi = csvread('recompense_combinaison.csv');
+explo = csvread('cost.csv');
 
-plot(explo(:,2),explo(:,1),'r', 'LineWidth', 2)
+plot(explo(:,1),'r', 'LineWidth', 2) %% exploration pure
 hold on
-plot(combi(:,2),combi(:,1),'g', 'LineWidth', 2)
+plot(explo(:,2),'g', 'LineWidth', 2) %% combinaison
+title('reward = f(iteration number)');
+xlabel('iteration number');
+ylabel('reward');
