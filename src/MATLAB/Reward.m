@@ -1,3 +1,4 @@
+% Politique de récompense
 classdef Reward < handle
     methods(Static)
         function r = value(from, to)

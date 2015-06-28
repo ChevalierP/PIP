@@ -1,7 +1,7 @@
 State.setSpace(linspace(0, 25, 6), (-50:10:50)*pi/180, 0:1);
 
-track = Track('circle', [0 0], 5);
-veh = Vehicule([2.5 -1 pi/2]);
+track = Track('line', [0 0], 5);
+veh = Vehicule([25 0 0]);
 S = State.fromIndex(1);
 
 stop = 0;

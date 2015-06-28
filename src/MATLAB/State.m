@@ -1,3 +1,4 @@
+% Espace d'état
 classdef State < handle
     properties(SetAccess = private)
         v_i
@@ -15,8 +16,8 @@ classdef State < handle
     methods(Static)
         function setSpace(v, theta, d)  % définition de l'espace d'état
             State.speedSpace(v);        % définition de l'espace de la vitesse
-            State.directionSpace(theta);% définirion de l'espace de la direction
-            State.distanceSpace(d);     % définirion de l'espace des distances des capteurs
+            State.directionSpace(theta);% définition de l'espace de la direction
+            State.distanceSpace(d);     % définition de l'espace des distances des capteurs
         end
         
         % Les fonctions *Space permettent de définir l'espace pour une
@@ -80,38 +81,19 @@ classdef State < handle
     
     methods
         function o = State(v_i, theta_i, d_i)
-%             if strcmp(v_i, 'random')
-%                 card_v = length(State.speedSpace);
-%                 card_theta = length(State.directionSpace);
-%                 card_d = length(State.distanceSpace);
-%                 v_j = randi(card_v);
-%                 theta_j = randi(card_theta);
-%                 d_j = randi(card_d, 3, 1); % rendre le 3 générique
-%                 o = State(v_j, theta_j, d_j);
-%             else
-                o.v_i = v_i;
-                o.theta_i = theta_i;
-                if strcmp(o.v_i, 'random'), o.v_i = randi(length(State.speedSpace)); end
-                if strcmp(o.theta_i, 'random'), o.theta_i = randi(length(State.directionSpace)); end
-                o.d_i = d_i;
-                o.v = State.speedSpace(o.v_i);
-                o.theta = State.directionSpace(o.theta_i);
-                N = length(o.d_i);
-                o.d = zeros(N, 1);
-                for i = 1:N
-                    o.d(i) = State.distanceSpace(d_i(i));
-                end
-                o.index = State.toIndex(o);
-%                 for i = 1:N
-%                     if d(i) > o.threshold
-%                         o.d(i) = 1;
-%                     elseif d(i) > 0
-%                         o.d(i) = 0;
-%                     else
-%                         o.d(i) = -1;
-%                     end
-%                 end
-            %end
+            o.v_i = v_i;
+            o.theta_i = theta_i;
+            if strcmp(o.v_i, 'random'), o.v_i = randi(length(State.speedSpace)); end
+            if strcmp(o.theta_i, 'random'), o.theta_i = randi(length(State.directionSpace)); end
+            o.d_i = d_i;
+            o.v = State.speedSpace(o.v_i);
+            o.theta = State.directionSpace(o.theta_i);
+            N = length(o.d_i);
+            o.d = zeros(N, 1);
+            for i = 1:N
+                o.d(i) = State.distanceSpace(d_i(i));
+            end
+            o.index = State.toIndex(o);
         end
         
         function b = isOutside(o)

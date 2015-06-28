@@ -9,7 +9,7 @@ classdef Track < handle
         % arg :
         %  line : length
         %  circle : center, radius
-        %  turn : length_x, length_y __|
+        %  turn : length_x, length_y
         function o = Track(predef, varargin)
             switch predef
                 case 'line'
