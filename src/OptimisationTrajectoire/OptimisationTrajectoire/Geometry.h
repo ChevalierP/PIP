@@ -11,6 +11,7 @@ using segment_t = boost::geometry::model::segment<point_t>;
 using ref_segment_t = boost::geometry::model::referring_segment<const point_t>;
 using polygon_t = boost::geometry::model::polygon<point_t>;
 
+// Demi-droite pour le calcul de distance dans une direction donnée
 class ray_t
 {
 public:

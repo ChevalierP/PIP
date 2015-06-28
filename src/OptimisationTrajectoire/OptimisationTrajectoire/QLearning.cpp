@@ -16,8 +16,10 @@ SpeedAxisReward::SpeedAxisReward(Config& config) : mConfig(config)
 
 float SpeedAxisReward::GetReward(const Observation& obs, const Command& command, const Command& last, const Vehicule& veh, const Track& track) const
 {
+	// Récompense finale
 	if(mConfig.rewardFinish() && track.HasFinished(veh.GetLastPosition()))
 		return mConfig.finishLineReward();
+	// Sortie de piste
 	if(mConfig.rewardOffTrack() && !track.IsInside(veh.GetLastPosition()))
 		return mConfig.offTrackCost();
 
@@ -26,21 +28,26 @@ float SpeedAxisReward::GetReward(const Observation& obs, const Command& command,
 	float l = veh.GetGravityCenterPosition();
 	float theta = std::get<steering>(command);
 	
+	// Dérapage
 	if(mConfig.rewardSkid())
 	{
 		float maxspeed = std::sqrt(mu*l*g/std::abs(std::sin(theta)));
+		// Condition de dérapage
 		if(std::get<speed>(command) > maxspeed)
 			return mConfig.skidCost();
 	}
 
+	// Favorisation de la vitesse et des trajectoires dans l'axe du circuit
 	point_t vehaxis(std::cos(veh.GetAxis()), std::sin(veh.GetAxis()));
 	point_t trackaxis = track.GetTrackAxis(veh.GetLastPosition());
 	float ps = boost::geometry::dot_product(vehaxis, trackaxis);
 	float cosa = ps; // =ps/norm(trackaxis);
 	float reward = std::get<speed>(command)*cosa;
 
+	// Changement de direction
 	if(mConfig.rewardSteeringChange() && std::get<steering>(last) != std::get<steering>(command))
 		reward *= 1 - mConfig.steeringCostFactor();
+
 	return reward;
 }
 

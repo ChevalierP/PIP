@@ -14,6 +14,7 @@ void Vehicule::AddCommand(const Command& c)
 
 void Vehicule::Sim()
 {
+	// Simulation cinématique (Runge-Kutta Dopri 5)
 	using namespace boost::numeric;
 	odeint::runge_kutta_dopri5<StateType, float> stepper;
 	while(mPosition.size() < mCommand.size())
@@ -28,6 +29,7 @@ void Vehicule::Sim()
 
 void Vehicule::System(const StateType& x, StateType& dx, float t)
 {
+	// Dérivée du vecteur d'état par rapport au temps
 	const Command& c = mCommand[mPosition.size()];
 	float speed, steering;
 	std::tie(speed, steering) = c;

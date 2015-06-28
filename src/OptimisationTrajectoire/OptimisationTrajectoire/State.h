@@ -8,14 +8,15 @@
 #include <random>
 #include "Geometry.h"
 
-// Speed and steering
+// Vitesse et direction
 static const int speed = 0;
 static const int steering = 1;
 using Command = std::tuple<float, float>;
 
-// Distances from sensors
+// Distances issues des capteurs du véhicule
 using Observation = std::vector<int>;
 
+// Interval de valeurs équidistantes
 class Linspace
 {
 public:
@@ -37,6 +38,7 @@ private:
 	std::uniform_int_distribution<int> mRand;
 };
 
+// Conversion des distances en indice de secteur
 class DiscreteSector
 {
 public:
@@ -52,12 +54,15 @@ private:
 	Container mLimits;
 };
 
+// Espace d'état
 class StateSpace
 {
 public:
 	StateSpace(const Linspace& speed, const Linspace& steering, const DiscreteSector& distance);
 
+	// Génération d'une commande avec une vitesse et une direction aléatoires
 	Command GenRandomCommand();
+	// Génération d'une commande avec une vitesse aléatoire et une direction contrainte
 	Command GenConstrainedCommand(const Command& last);
 	const DiscreteSector& GetDistanceSpace() const { return mDistanceSpace; }
 
@@ -67,6 +72,7 @@ private:
 	DiscreteSector mDistanceSpace;
 };
 
+// Capteurs de distance
 class Sensors
 {
 public:

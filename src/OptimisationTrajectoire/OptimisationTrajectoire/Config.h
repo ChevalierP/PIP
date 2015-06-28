@@ -8,6 +8,7 @@
 	private: \
 		T m_##name;
 
+// Paramètres de la simulation
 class Config
 {
 	CONFIG_VAR(float, gamma);
@@ -25,6 +26,7 @@ class Config
 	CONFIG_VAR(bool, rollingStart);
 	CONFIG_VAR(float, coefficientOfFriction);
 	CONFIG_VAR(float, accelerationOfGravity);
+	CONFIG_VAR(bool, offTrackRewardBackpropagation);
 };
 
 #endif // !_PIP_CONFIG_H_

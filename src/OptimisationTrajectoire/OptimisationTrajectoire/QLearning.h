@@ -7,6 +7,7 @@
 #include "Track.h"
 #include "Config.h"
 
+// Politique de récompense
 class SpeedAxisReward
 {
 public:
@@ -17,6 +18,7 @@ protected:
 	Config& mConfig;
 };
 
+// Matrice de qualité
 class Quality
 {
 public:
@@ -24,19 +26,26 @@ public:
 	using CommandMap = std::map<Command, CommandQuality>;
 	using SensorQuality = std::map<Observation, CommandMap>;
 
+	// Associations (état, action) pour une observation donnée
 	CommandMap& GetCommandMap(const Observation& obs);
+	// Qualité des actions à partir d'un état donné
 	CommandQuality& GetCommandQuality(const Observation& obs, const Command& current);
+
+	// Meilleure récompense à partir d'un état donné
 	float GetBestReward(const Observation& obs, const Command& current, float def = 0);
+	// Meilleure commande à partir d'un état donné
 	const Command& GetBestCommand(const Observation& obs, const Command& current, const Command& def = Command());
+
 	void UpdateCommandReward(const Observation& obs, const Command& from, const Command& to, float q);
+
+	// Qualité d'un couple (état, action)
 	float Get(const Observation& obs, const Command& from, const Command& to) { return mQuality[obs][from][to]; }
 
 private:
 	SensorQuality mQuality;
 };
 
-
-enum class StateChoicePolicy { Exploration, Exploitation};
+enum class StateChoicePolicy { Exploration, Exploitation };
 template<class T>
 class QLearning
 {
